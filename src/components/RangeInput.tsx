@@ -9,13 +9,15 @@ const OPTIONS: { value: RangeValue; label: string }[] = [
 type RangeInputProps = {
   value: RangeValue | null
   onChange: (value: RangeValue | null) => void
+  highlightedValues?: RangeValue[]
 }
 
-export function RangeInput({ value, onChange }: RangeInputProps) {
+export function RangeInput({ value, onChange, highlightedValues }: RangeInputProps) {
   return (
     <div className="flex items-center gap-[18px]">
       {OPTIONS.map((option) => {
         const selected = value === option.value
+        const highlighted = !selected && highlightedValues?.includes(option.value)
         return (
           <button
             key={option.value}
@@ -24,7 +26,9 @@ export function RangeInput({ value, onChange }: RangeInputProps) {
             className={`rounded-xl px-6 py-1 text-base transition-colors ${
               selected
                 ? 'bg-teachstone-complete text-white'
-                : 'bg-white text-teachstone-muted hover:bg-gray-50'
+                : highlighted
+                  ? 'border-[3px] border-teachstone-score-mid-border bg-teachstone-score-mid text-teachstone-navy'
+                  : 'bg-white text-teachstone-muted hover:bg-gray-50'
             }`}
           >
             {option.label}

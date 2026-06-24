@@ -5,6 +5,7 @@ import type {
   RangeValue,
   ScoreValue,
 } from '../types'
+import { areAllIndicatorsComplete } from '../utils/scoreRecommendation'
 
 const RANGE_LABELS: Record<RangeValue, string> = {
   low: 'Low',
@@ -81,9 +82,7 @@ export function AccordionStatusBar({
   overallValue,
 }: AccordionStatusBarProps) {
   const showIndicatorScoring = flow.features?.showIndicatorScoring !== false
-  const allIndicatorsComplete = indicators.every(
-    (indicator) => indicatorValues[indicator.id] != null,
-  )
+  const allIndicatorsComplete = areAllIndicatorsComplete(indicators, indicatorValues)
 
   return (
     <div className="flex items-center gap-12 rounded-xl bg-white px-4 py-2">

@@ -2,6 +2,7 @@ import { AccordionStatusBar } from './AccordionStatusBar'
 import { RangeInput } from './RangeInput'
 import { ScoringInput } from './ScoringInput'
 import type { ClassDimension, DimensionCycleData, FlowDefinition } from '../types'
+import { getDimensionRecommendation } from '../utils/scoreRecommendation'
 
 type DimensionAccordionProps = {
   dimension: ClassDimension
@@ -21,6 +22,12 @@ export function DimensionAccordion({
   onChange,
 }: DimensionAccordionProps) {
   const showIndicatorScoring = flow.features?.showIndicatorScoring !== false
+  const recommendation = getDimensionRecommendation(
+    dimension.indicators,
+    data.indicatorValues,
+    flow.scoring.type,
+  )
+  const showRecommendationHighlights = recommendation.active && data.overallValue == null
 
   return (
     <div
@@ -108,6 +115,16 @@ export function DimensionAccordion({
                   scoringType={flow.scoring.type}
                   value={data.overallValue}
                   onChange={(value) => onChange({ ...data, overallValue: value })}
+                  highlightedScores={
+                    showRecommendationHighlights && 'formalScores' in recommendation
+                      ? recommendation.formalScores
+                      : undefined
+                  }
+                  highlightedRanges={
+                    showRecommendationHighlights && 'informalRange' in recommendation
+                      ? [recommendation.informalRange]
+                      : undefined
+                  }
                 />
               </div>
             </div>

@@ -31,7 +31,7 @@ export function CyclePage() {
         <div className="flex items-center gap-5">
           <span className="text-2xl text-teachstone-teal">+</span>
           <div>
-            <h2 className="text-2xl text-teachstone-navy">Cycle Details</h2>
+            <h2 className="text-2xl font-semibold text-teachstone-navy">Cycle Details</h2>
             <p className="text-sm text-teachstone-muted">Enter cycle information</p>
           </div>
         </div>
@@ -42,7 +42,7 @@ export function CyclePage() {
           <div className="flex items-center gap-5">
             <span className="text-2xl text-teachstone-teal">−</span>
             <div>
-              <h2 className="text-2xl text-teachstone-navy">{activeFlow.scoring.sectionLabel}</h2>
+              <h2 className="text-2xl font-semibold text-teachstone-navy">{activeFlow.scoring.sectionLabel}</h2>
               <p className="text-sm text-teachstone-muted">
                 Select indicator and dimension {activeFlow.scoring.type === 'range' ? 'ranges' : 'scores'}
               </p>
