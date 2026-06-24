@@ -1,4 +1,7 @@
 import type { CSSProperties } from 'react'
+import { ChatBubbleIcon } from './icons'
+
+const FEEDBACK_LABEL = 'Give us feedback'
 
 const HEARTS = [
   { left: '18%', delay: '0s', drift: '-8px', duration: '1.4s' },
@@ -9,7 +12,7 @@ const HEARTS = [
 
 export function FeedbackButton() {
   return (
-    <div className="feedback-button-wrap relative">
+    <div className="feedback-button-wrap relative p-0.5">
       <div
         className="pointer-events-none absolute inset-x-0 bottom-0 h-16 overflow-visible"
         aria-hidden
@@ -36,9 +39,17 @@ export function FeedbackButton() {
         href="https://forms.gle/LFvdUJmqKLnMce5V7"
         target="_blank"
         rel="noopener noreferrer"
-        className="feedback-button relative z-10 block rounded-[20px_20px_20px_0px] bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-orange-400"
+        className="feedback-button group relative z-10 inline-flex items-center gap-2 rounded-[20px_20px_20px_0px] bg-orange-500 px-4 py-2 text-sm font-semibold text-white shadow-lg transition hover:bg-orange-400 max-[1299px]:px-2.5 max-[1299px]:py-2.5"
       >
-        Give us feedback
+        <ChatBubbleIcon className="size-[16px] shrink-0" />
+        <span className="max-[1299px]:sr-only">{FEEDBACK_LABEL}</span>
+        <span
+          role="tooltip"
+          aria-hidden
+          className="pointer-events-none absolute bottom-full left-0 z-20 mb-2 whitespace-nowrap rounded-md bg-[#1A0238] px-3 py-1.5 text-xs font-medium text-white opacity-0 shadow-lg transition-opacity duration-150 min-[1300px]:hidden max-[1299px]:group-hover:opacity-100 max-[1299px]:group-focus-visible:opacity-100"
+        >
+          {FEEDBACK_LABEL}
+        </span>
       </a>
     </div>
   )
