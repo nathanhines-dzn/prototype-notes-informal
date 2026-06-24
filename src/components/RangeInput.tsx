@@ -27,7 +27,7 @@ export function RangeInput({ value, onChange, highlightedValues }: RangeInputPro
               selected
                 ? 'bg-teachstone-complete text-white'
                 : highlighted
-                  ? 'border-[3px] border-teachstone-score-mid-border bg-teachstone-score-mid text-teachstone-navy'
+                  ? 'bg-teachstone-score-mid text-teachstone-navy shadow-[inset_0_0_0_3px_var(--color-teachstone-score-mid-border)]'
                   : 'bg-white text-teachstone-muted hover:bg-gray-50'
             }`}
           >

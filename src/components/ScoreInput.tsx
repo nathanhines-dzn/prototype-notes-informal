@@ -23,7 +23,7 @@ export function ScoreInput({ value, onChange, highlightedValues }: ScoreInputPro
               selected
                 ? 'bg-teachstone-complete text-white'
                 : highlighted
-                  ? 'border-[3px] border-teachstone-score-mid-border bg-teachstone-score-mid text-teachstone-navy'
+                  ? 'bg-teachstone-score-mid text-teachstone-navy shadow-[1px_4px_10px_rgba(0,0,0,0.25),inset_0_0_0_3px_var(--color-teachstone-score-mid-border)]'
                   : 'bg-white text-teachstone-navy hover:bg-gray-50'
             }`}
           >
