@@ -37,7 +37,7 @@ export function DimensionAccordion({
             onToggleExpand()
           }
         }}
-        className="flex cursor-pointer items-center justify-between px-12 py-3"
+        className="flex cursor-pointer items-center justify-between px-7 py-3"
       >
         <span className="text-base font-bold text-teachstone-navy">
           {dimension.name} ({dimension.abbr})
@@ -52,7 +52,7 @@ export function DimensionAccordion({
       </div>
 
       {expanded && (
-        <div className="mx-12 border-t-[3px] border-white pt-6">
+        <div className="mx-7 border-t-[3px] border-white pt-6">
           <div className="space-y-6">
             <div className="space-y-2">
               <label

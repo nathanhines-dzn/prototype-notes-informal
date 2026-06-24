@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { InfoIcon } from '../components/layout/icons'
 import { usePrototype } from '../context/PrototypeContext'
 
 function Field({
@@ -41,6 +42,11 @@ export function CreateObservationPage() {
       </h1>
 
       <div className="mx-auto w-full max-w-5xl rounded-lg bg-white p-8 shadow-sm">
+        <div className="mb-8 flex items-center gap-3 rounded border border-teachstone-teal/20 bg-teachstone-card px-4 py-3 text-sm text-teachstone-muted whitespace-nowrap">
+          <InfoIcon className="size-4 shrink-0 text-teachstone-teal" aria-label="Information" />
+          This is a prototype. The form inputs below are not functional. Click Create Observation to start.
+        </div>
+
         <div className="grid grid-cols-1 gap-x-16 gap-y-8 md:grid-cols-2">
           <Field label="Observation Date" required>
             <InputLike placeholder="Select a date" />

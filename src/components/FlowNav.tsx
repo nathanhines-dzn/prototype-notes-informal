@@ -35,11 +35,14 @@ export function FlowNav({
 
       <button
         type="button"
-        onClick={onNext ?? goNext}
+        onClick={(event) => {
+          event.preventDefault()
+          ;(onNext ?? goNext)()
+        }}
         className="inline-flex items-center gap-3 text-base text-teachstone-teal hover:underline"
       >
-        {nextLabel}
-        <span className="flex h-9 w-9 items-center justify-center rounded-full border border-teachstone-teal">
+        <span className="pointer-events-none">{nextLabel}</span>
+        <span className="pointer-events-none flex h-9 w-9 items-center justify-center rounded-full border border-teachstone-teal">
           <ArrowRight className="h-5 w-5" />
         </span>
       </button>

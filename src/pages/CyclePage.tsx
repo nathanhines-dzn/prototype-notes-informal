@@ -12,6 +12,7 @@ export function CyclePage() {
     expandedDimensionId,
     setExpandedDimensionId,
     updateDimensionData,
+    goToComplete,
   } = usePrototype()
   const contentRef = useRef<HTMLDivElement>(null)
 
@@ -25,7 +26,7 @@ export function CyclePage() {
   }
 
   return (
-    <div ref={contentRef} className="px-20 pt-4 pb-[42px]">
+    <div ref={contentRef} className="px-[42px] pt-4 pb-[42px]">
       <section className="mb-4 rounded-lg bg-white px-8 py-6 shadow-sm">
         <div className="flex items-center gap-5">
           <span className="text-2xl text-teachstone-teal">+</span>
@@ -49,7 +50,7 @@ export function CyclePage() {
           </div>
         </div>
 
-        <div className="space-y-4 px-14 py-6">
+        <div className="space-y-4 px-8 py-6">
           {CLASS_DIMENSIONS.map((dimension) => (
             <DimensionAccordion
               key={dimension.id}
@@ -77,7 +78,11 @@ export function CyclePage() {
           </button>
         </div>
 
-        <FlowNav showBack={cycleNumber > 1 || activeFlow.steps[0]?.type === 'create'} />
+        <FlowNav
+          showBack={activeFlow.steps[0]?.type === 'create'}
+          nextLabel="Finish"
+          onNext={goToComplete}
+        />
       </section>
     </div>
   )

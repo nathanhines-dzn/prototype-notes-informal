@@ -11,6 +11,7 @@ function PrototypeApp() {
 
   useEffect(() => {
     window.scrollTo(0, 0)
+    document.querySelector('main')?.scrollTo(0, 0)
   }, [stepIndex])
 
   if (currentStep.type === 'create') {
@@ -25,7 +26,7 @@ function PrototypeApp() {
   if (currentStep.type === 'cycle') {
     return (
       <AppShell showSidebar showMetaBar>
-        <CyclePage />
+        <CyclePage key={stepIndex} />
         <SettingsModal />
       </AppShell>
     )
