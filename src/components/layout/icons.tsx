@@ -89,3 +89,22 @@ export function InfoIcon({ className, 'aria-label': ariaLabel }: IconProps) {
     </svg>
   )
 }
+
+export function ChatBubbleIcon({ className }: IconProps) {
+  return (
+    <svg viewBox="0 0 24 24" fill="none" className={className} aria-hidden>
+      <path
+        d="M12 21a9 9 0 0 0 9-9c0-4.97-4.03-9-9-9S3 7.03 3 12c0 1.49.37 2.9 1.02 4.13L3 21l4.98-1.65A8.96 8.96 0 0 0 12 21Z"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8.5 12h.01M12 12h.01M15.5 12h.01"
+        stroke="currentColor"
+        strokeWidth="2.5"
+        strokeLinecap="round"
+      />
+    </svg>
+  )
+}
