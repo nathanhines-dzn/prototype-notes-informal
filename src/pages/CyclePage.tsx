@@ -1,7 +1,6 @@
-import { useRef } from 'react'
+import { useEffect, useRef } from 'react'
 import { DimensionAccordion } from '../components/DimensionAccordion'
 import { FlowNav } from '../components/FlowNav'
-import { CLASS_DIMENSIONS } from '../data/classDimensions'
 import { getCurrentCycleNumber, usePrototype } from '../context/PrototypeContext'
 
 export function CyclePage() {
@@ -13,10 +12,22 @@ export function CyclePage() {
     setExpandedDimensionId,
     updateDimensionData,
     goToComplete,
+    getActiveDimensions,
   } = usePrototype()
   const contentRef = useRef<HTMLDivElement>(null)
 
   const cycleNumber = getCurrentCycleNumber(currentStep)
+  const activeDimensions = getActiveDimensions()
+
+  useEffect(() => {
+    if (
+      expandedDimensionId &&
+      !activeDimensions.some((dimension) => dimension.id === expandedDimensionId)
+    ) {
+      setExpandedDimensionId(null)
+    }
+  }, [activeDimensions, expandedDimensionId, setExpandedDimensionId])
+
   if (!cycleNumber) return null
 
   const currentCycleData = cycleData[cycleNumber]
@@ -51,7 +62,7 @@ export function CyclePage() {
         </div>
 
         <div className="space-y-4 px-8 py-6">
-          {CLASS_DIMENSIONS.map((dimension) => (
+          {activeDimensions.map((dimension) => (
             <DimensionAccordion
               key={dimension.id}
               dimension={dimension}

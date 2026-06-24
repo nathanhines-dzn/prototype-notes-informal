@@ -8,6 +8,28 @@ const DEFAULT_STEPS: FlowDefinition['steps'] = [
 
 export const FLOWS: FlowDefinition[] = [
   {
+    id: 'formal',
+    label: 'Formal observation (scores)',
+    scoring: {
+      type: 'numeric',
+      overallLabel: 'Score',
+      sectionLabel: 'Enter Scores',
+      overallToggleLabel: 'Score',
+    },
+    features: {
+      showIndicatorScoring: true,
+    },
+    createForm: {
+      title: 'Create CLASS 2nd Edition Observation',
+      showEnvironmentCheckbox: true,
+    },
+    sidebar: {
+      title: 'CLASS 2nd Edition with Environment',
+      skipEnvironment: true,
+    },
+    steps: DEFAULT_STEPS,
+  },
+  {
     id: 'informal',
     label: 'Informal observation (ranges)',
     scoring: {
@@ -30,23 +52,24 @@ export const FLOWS: FlowDefinition[] = [
     steps: DEFAULT_STEPS,
   },
   {
-    id: 'formal',
-    label: 'Formal observation (scores)',
+    id: 'informal-2',
+    label: 'Informal 2.0 (dimension focus)',
     scoring: {
-      type: 'numeric',
-      overallLabel: 'Score',
-      sectionLabel: 'Enter Scores',
-      overallToggleLabel: 'Score',
+      type: 'range',
+      overallLabel: 'Overall Range',
+      sectionLabel: 'Enter Ranges',
+      overallToggleLabel: 'Range',
     },
     features: {
       showIndicatorScoring: true,
     },
     createForm: {
-      title: 'Create CLASS 2nd Edition Observation',
+      title: 'Create CLASS 2nd Edition - Informal Observation',
       showEnvironmentCheckbox: true,
+      showDimensionFocusOptions: true,
     },
     sidebar: {
-      title: 'CLASS 2nd Edition with Environment',
+      title: 'CLASS 2nd Edition - Informal with Environment',
       skipEnvironment: true,
     },
     steps: DEFAULT_STEPS,

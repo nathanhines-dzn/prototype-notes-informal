@@ -23,6 +23,7 @@ export type FlowDefinition = {
   createForm: {
     title: string
     showEnvironmentCheckbox?: boolean
+    showDimensionFocusOptions?: boolean
   }
   sidebar: {
     title: string

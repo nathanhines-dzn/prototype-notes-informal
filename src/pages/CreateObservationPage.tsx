@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { InformalObservationOptions } from '../components/InformalObservationOptions'
 import { InfoIcon } from '../components/layout/icons'
 import { usePrototype } from '../context/PrototypeContext'
 
@@ -32,8 +33,9 @@ function InputLike({ value, placeholder }: { value?: string; placeholder?: strin
 }
 
 export function CreateObservationPage() {
-  const { activeFlow, goNext } = usePrototype()
+  const { activeFlow, goNext, includeAllDimensions, focusedDimensionIds } = usePrototype()
   const { createForm } = activeFlow
+  const canCreate = includeAllDimensions || focusedDimensionIds.length > 0
 
   return (
     <div className="flex h-full w-full flex-col items-center justify-start px-20 py-[42px]">
@@ -87,14 +89,21 @@ export function CreateObservationPage() {
           </label>
         )}
 
+        {createForm.showDimensionFocusOptions && <InformalObservationOptions />}
+
         <div className="mt-10 flex justify-end gap-4">
           <button type="button" className="rounded px-6 py-2 text-sm text-teachstone-slate">
             Cancel
           </button>
           <button
             type="button"
-            onClick={goNext}
-            className="rounded bg-teachstone-teal px-6 py-2 text-sm font-medium text-white hover:bg-[#016688]"
+            onClick={() => {
+              if (canCreate) {
+                goNext()
+              }
+            }}
+            disabled={!canCreate}
+            className="rounded bg-teachstone-teal px-6 py-2 text-sm font-medium text-white hover:bg-[#016688] disabled:cursor-not-allowed disabled:opacity-50"
           >
             Create Observation
           </button>

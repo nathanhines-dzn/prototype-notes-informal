@@ -7,9 +7,14 @@ import {
   type ReactNode,
 } from 'react'
 import { DEFAULT_FLOW_ID, getFlowById } from '../config/flows'
-import { createEmptyAllCycleData } from '../data/classDimensions'
+import {
+  CLASS_DIMENSIONS,
+  createEmptyAllCycleData,
+  createEmptyDimensionData,
+} from '../data/classDimensions'
 import type {
   AllCycleData,
+  ClassDimension,
   DimensionCycleData,
   FlowDefinition,
   FlowStep,
@@ -27,8 +32,13 @@ type PrototypeContextValue = {
   cycleData: AllCycleData
   settingsOpen: boolean
   expandedDimensionId: string | null
+  includeAllDimensions: boolean
+  focusedDimensionIds: string[]
   setSettingsOpen: (open: boolean) => void
   setActiveFlow: (flowId: string) => void
+  setIncludeAllDimensions: (checked: boolean) => void
+  setFocusedDimensionIds: (ids: string[]) => void
+  getActiveDimensions: () => ClassDimension[]
   goNext: () => void
   goToComplete: () => void
   goBack: () => void
@@ -71,15 +81,37 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
   )
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [expandedDimensionId, setExpandedDimensionId] = useState<string | null>(null)
+  const [includeAllDimensions, setIncludeAllDimensionsState] = useState(true)
+  const [focusedDimensionIds, setFocusedDimensionIdsState] = useState<string[]>([])
 
   const activeFlow = useMemo(() => getFlowById(activeFlowId), [activeFlowId])
   const currentStep = activeFlow.steps[stepIndex]
+
+  const clearCycleDataForDimensions = useCallback((dimensionIds: string[]) => {
+    if (dimensionIds.length === 0) return
+
+    setCycleData((current) => {
+      const next = { ...current }
+      for (const cycleNumber of Object.keys(next)) {
+        const cycle = { ...next[Number(cycleNumber)] }
+        for (const dimensionId of dimensionIds) {
+          if (cycle[dimensionId]) {
+            cycle[dimensionId] = createEmptyDimensionData(dimensionId)
+          }
+        }
+        next[Number(cycleNumber)] = cycle
+      }
+      return next
+    })
+  }, [])
 
   const resetSession = useCallback(
     (flowId: string) => {
       setStepIndex(0)
       setCycleData(createEmptyAllCycleData(DEFAULT_META.numberOfCycles))
       setExpandedDimensionId(null)
+      setIncludeAllDimensionsState(true)
+      setFocusedDimensionIdsState([])
       setActiveFlowIdState(flowId)
       try {
         localStorage.setItem(STORAGE_KEY, flowId)
@@ -89,6 +121,33 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
     },
     [],
   )
+
+  const setIncludeAllDimensions = useCallback((checked: boolean) => {
+    setIncludeAllDimensionsState(checked)
+    if (checked) {
+      setFocusedDimensionIdsState([])
+    }
+  }, [])
+
+  const setFocusedDimensionIds = useCallback(
+    (ids: string[]) => {
+      setFocusedDimensionIdsState((current) => {
+        const removedIds = current.filter((id) => !ids.includes(id))
+        if (removedIds.length > 0) {
+          clearCycleDataForDimensions(removedIds)
+        }
+        return ids
+      })
+    },
+    [clearCycleDataForDimensions],
+  )
+
+  const getActiveDimensions = useCallback((): ClassDimension[] => {
+    if (includeAllDimensions) {
+      return CLASS_DIMENSIONS
+    }
+    return CLASS_DIMENSIONS.filter((dimension) => focusedDimensionIds.includes(dimension.id))
+  }, [includeAllDimensions, focusedDimensionIds])
 
   const setActiveFlow = useCallback(
     (flowId: string) => {
@@ -150,8 +209,13 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       cycleData,
       settingsOpen,
       expandedDimensionId,
+      includeAllDimensions,
+      focusedDimensionIds,
       setSettingsOpen,
       setActiveFlow,
+      setIncludeAllDimensions,
+      setFocusedDimensionIds,
+      getActiveDimensions,
       goNext,
       goToComplete,
       goBack,
@@ -167,7 +231,12 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       cycleData,
       settingsOpen,
       expandedDimensionId,
+      includeAllDimensions,
+      focusedDimensionIds,
       setActiveFlow,
+      setIncludeAllDimensions,
+      setFocusedDimensionIds,
+      getActiveDimensions,
       goNext,
       goToComplete,
       goBack,
