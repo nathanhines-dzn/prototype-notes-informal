@@ -2,11 +2,12 @@ import {
   createContext,
   useCallback,
   useContext,
+  useEffect,
   useMemo,
   useState,
   type ReactNode,
 } from 'react'
-import { DEFAULT_FLOW_ID, getFlowById } from '../config/flows'
+import { getFlowById } from '../config/flows'
 import {
   CLASS_DIMENSIONS,
   createEmptyAllCycleData,
@@ -20,8 +21,13 @@ import type {
   FlowStep,
   ObservationMeta,
 } from '../types'
-
-const STORAGE_KEY = 'class-notes-prototype-flow-id'
+import {
+  FLOW_STORAGE_KEY,
+  getFlowIdFromUrl,
+  resolveInitialFlowId,
+  setFlowInUrl,
+  stripInvalidFlowParam,
+} from '../utils/flowUrl'
 
 const ALL_DIMENSION_IDS = CLASS_DIMENSIONS.map((dimension) => dimension.id)
 
@@ -66,20 +72,8 @@ const DEFAULT_META: ObservationMeta = {
   numberOfCycles: 3,
 }
 
-function readStoredFlowId(): string {
-  try {
-    const stored = localStorage.getItem(STORAGE_KEY)
-    if (stored && getFlowById(stored)) {
-      return stored
-    }
-  } catch {
-    // ignore storage errors in prototype
-  }
-  return DEFAULT_FLOW_ID
-}
-
 export function PrototypeProvider({ children }: { children: ReactNode }) {
-  const [activeFlowId, setActiveFlowIdState] = useState(readStoredFlowId)
+  const [activeFlowId, setActiveFlowIdState] = useState(resolveInitialFlowId)
   const [stepIndex, setStepIndex] = useState(0)
   const [cycleData, setCycleData] = useState<AllCycleData>(() =>
     createEmptyAllCycleData(DEFAULT_META.numberOfCycles),
@@ -88,6 +82,19 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
   const [expandedDimensionId, setExpandedDimensionId] = useState<string | null>(null)
   const [includeAllDimensions, setIncludeAllDimensionsState] = useState(true)
   const [focusedDimensionIds, setFocusedDimensionIdsState] = useState<string[]>([])
+
+  useEffect(() => {
+    stripInvalidFlowParam()
+
+    const fromUrl = getFlowIdFromUrl()
+    if (fromUrl) {
+      try {
+        localStorage.setItem(FLOW_STORAGE_KEY, fromUrl)
+      } catch {
+        // ignore storage errors in prototype
+      }
+    }
+  }, [])
 
   const activeFlow = useMemo(() => getFlowById(activeFlowId), [activeFlowId])
   const currentStep = activeFlow.steps[stepIndex]
@@ -119,10 +126,11 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       setFocusedDimensionIdsState([])
       setActiveFlowIdState(flowId)
       try {
-        localStorage.setItem(STORAGE_KEY, flowId)
+        localStorage.setItem(FLOW_STORAGE_KEY, flowId)
       } catch {
         // ignore storage errors in prototype
       }
+      setFlowInUrl(flowId)
     },
     [],
   )

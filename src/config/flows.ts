@@ -79,8 +79,16 @@ export const FLOWS: FlowDefinition[] = [
 
 export const DEFAULT_FLOW_ID = 'informal'
 
+export function findFlowById(id: string): FlowDefinition | undefined {
+  return FLOWS.find((entry) => entry.id === id)
+}
+
+export function isValidFlowId(id: string): boolean {
+  return findFlowById(id) !== undefined
+}
+
 export function getFlowById(id: string): FlowDefinition {
-  const flow = FLOWS.find((entry) => entry.id === id)
+  const flow = findFlowById(id)
   if (!flow) {
     throw new Error(`Unknown flow id: ${id}`)
   }
