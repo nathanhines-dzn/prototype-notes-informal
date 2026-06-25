@@ -23,6 +23,8 @@ import type {
 
 const STORAGE_KEY = 'class-notes-prototype-flow-id'
 
+const ALL_DIMENSION_IDS = CLASS_DIMENSIONS.map((dimension) => dimension.id)
+
 type PrototypeContextValue = {
   activeFlow: FlowDefinition
   activeFlowId: string
@@ -36,8 +38,10 @@ type PrototypeContextValue = {
   focusedDimensionIds: string[]
   setSettingsOpen: (open: boolean) => void
   setActiveFlow: (flowId: string) => void
-  setIncludeAllDimensions: (checked: boolean) => void
-  setFocusedDimensionIds: (ids: string[]) => void
+  selectAllDimensions: () => void
+  setAllDimensionsRowChecked: (checked: boolean) => void
+  toggleDimensionInSelection: (dimensionId: string) => void
+  removeDimensionFromSelection: (dimensionId: string) => void
   getActiveDimensions: () => ClassDimension[]
   goNext: () => void
   goToSummary: () => void
@@ -123,24 +127,75 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
     [],
   )
 
-  const setIncludeAllDimensions = useCallback((checked: boolean) => {
-    setIncludeAllDimensionsState(checked)
-    if (checked) {
-      setFocusedDimensionIdsState([])
-    }
-  }, [])
+  const applyDimensionSelection = useCallback(
+    (includeAll: boolean, focusedIds: string[]) => {
+      setIncludeAllDimensionsState((previousIncludeAll) => {
+        setFocusedDimensionIdsState((previousFocusedIds) => {
+          const previousActive = previousIncludeAll ? ALL_DIMENSION_IDS : previousFocusedIds
+          const nextActive = includeAll ? ALL_DIMENSION_IDS : focusedIds
+          const removedIds = previousActive.filter((id) => !nextActive.includes(id))
 
-  const setFocusedDimensionIds = useCallback(
-    (ids: string[]) => {
-      setFocusedDimensionIdsState((current) => {
-        const removedIds = current.filter((id) => !ids.includes(id))
-        if (removedIds.length > 0) {
-          clearCycleDataForDimensions(removedIds)
-        }
-        return ids
+          if (removedIds.length > 0) {
+            clearCycleDataForDimensions(removedIds)
+          }
+
+          return focusedIds
+        })
+        return includeAll
       })
     },
     [clearCycleDataForDimensions],
+  )
+
+  const selectAllDimensions = useCallback(() => {
+    applyDimensionSelection(true, [])
+  }, [applyDimensionSelection])
+
+  const setAllDimensionsRowChecked = useCallback(
+    (checked: boolean) => {
+      if (checked) {
+        selectAllDimensions()
+        return
+      }
+      applyDimensionSelection(false, [])
+    },
+    [applyDimensionSelection, selectAllDimensions],
+  )
+
+  const toggleDimensionInSelection = useCallback(
+    (dimensionId: string) => {
+      if (includeAllDimensions) {
+        applyDimensionSelection(
+          false,
+          ALL_DIMENSION_IDS.filter((id) => id !== dimensionId),
+        )
+        return
+      }
+
+      const isSelected = focusedDimensionIds.includes(dimensionId)
+      const nextFocusedIds = isSelected
+        ? focusedDimensionIds.filter((id) => id !== dimensionId)
+        : [...focusedDimensionIds, dimensionId]
+
+      if (!isSelected && nextFocusedIds.length === ALL_DIMENSION_IDS.length) {
+        selectAllDimensions()
+        return
+      }
+
+      applyDimensionSelection(false, nextFocusedIds)
+    },
+    [applyDimensionSelection, focusedDimensionIds, includeAllDimensions, selectAllDimensions],
+  )
+
+  const removeDimensionFromSelection = useCallback(
+    (dimensionId: string) => {
+      if (includeAllDimensions) return
+      applyDimensionSelection(
+        false,
+        focusedDimensionIds.filter((id) => id !== dimensionId),
+      )
+    },
+    [applyDimensionSelection, focusedDimensionIds, includeAllDimensions],
   )
 
   const getActiveDimensions = useCallback((): ClassDimension[] => {
@@ -222,8 +277,10 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       focusedDimensionIds,
       setSettingsOpen,
       setActiveFlow,
-      setIncludeAllDimensions,
-      setFocusedDimensionIds,
+      selectAllDimensions,
+      setAllDimensionsRowChecked,
+      toggleDimensionInSelection,
+      removeDimensionFromSelection,
       getActiveDimensions,
       goNext,
       goToSummary,
@@ -244,8 +301,10 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       includeAllDimensions,
       focusedDimensionIds,
       setActiveFlow,
-      setIncludeAllDimensions,
-      setFocusedDimensionIds,
+      selectAllDimensions,
+      setAllDimensionsRowChecked,
+      toggleDimensionInSelection,
+      removeDimensionFromSelection,
       getActiveDimensions,
       goNext,
       goToSummary,

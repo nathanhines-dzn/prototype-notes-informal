@@ -31,23 +31,19 @@ export function InformalObservationOptions() {
   const {
     includeAllDimensions,
     focusedDimensionIds,
-    setIncludeAllDimensions,
-    setFocusedDimensionIds,
+    setAllDimensionsRowChecked,
+    toggleDimensionInSelection,
+    removeDimensionFromSelection,
   } = usePrototype()
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
 
-  const disabled = includeAllDimensions
   const selectedDimensions = CLASS_DIMENSIONS.filter((dimension) =>
-    focusedDimensionIds.includes(dimension.id),
+    includeAllDimensions ? true : focusedDimensionIds.includes(dimension.id),
   )
 
-  const toggleDimension = (dimensionId: string) => {
-    if (focusedDimensionIds.includes(dimensionId)) {
-      setFocusedDimensionIds(focusedDimensionIds.filter((id) => id !== dimensionId))
-      return
-    }
-    setFocusedDimensionIds([...focusedDimensionIds, dimensionId])
+  const toggleAllDimensions = () => {
+    setAllDimensionsRowChecked(!includeAllDimensions)
   }
 
   useEffect(() => {
@@ -75,94 +71,98 @@ export function InformalObservationOptions() {
 
   return (
     <section className="mt-8 border-t border-gray-100 pt-5">
-      <h2 className="mb-3 text-xl text-teachstone-slate">Informal Observation Options</h2>
+      <h2 className="mb-3 text-xl font-semibold text-teachstone-slate">Informal Observation Options</h2>
 
-      <div className="space-y-2 py-2">
-        <label className="flex items-center gap-3 text-base text-teachstone-slate">
-          <input
-            type="checkbox"
-            checked={includeAllDimensions}
-            onChange={(event) => setIncludeAllDimensions(event.target.checked)}
-            className="h-4 w-4 accent-teachstone-teal"
-          />
-          Include All Dimensions
+      <div className="w-full max-w-md py-2">
+        <label className="mb-1 block text-base text-teachstone-slate">
+          Dimension(s) of Focus
+          {!includeAllDimensions && <span className="text-red-700">*</span>}
         </label>
 
-        <div className="w-full max-w-md pt-1">
-          <label
-            className={`mb-1 block text-base ${disabled ? 'text-gray-400' : 'text-teachstone-slate'}`}
+        <div ref={containerRef} className="relative">
+          <button
+            type="button"
+            aria-expanded={open}
+            aria-haspopup="listbox"
+            onClick={() => setOpen((current) => !current)}
+            className="flex min-h-10 w-full items-center justify-between gap-2 rounded border border-gray-300 bg-white px-3 py-2 text-left text-base text-teachstone-slate hover:border-gray-400"
           >
-            Dimension(s) of Focus
-            {!disabled && <span className="text-red-700">*</span>}
-          </label>
+            <span className="flex min-h-6 flex-1 flex-wrap items-center gap-2">
+              {includeAllDimensions ? (
+                <span>All dimensions</span>
+              ) : selectedDimensions.length > 0 ? (
+                selectedDimensions.map((dimension) => (
+                  <DimensionPill
+                    key={dimension.id}
+                    label={`${dimension.name} (${dimension.abbr})`}
+                    onRemove={() => removeDimensionFromSelection(dimension.id)}
+                  />
+                ))
+              ) : (
+                <span className="text-gray-500">Select dimension(s) to include</span>
+              )}
+            </span>
+            <span className="shrink-0 text-gray-400">▾</span>
+          </button>
 
-          <div ref={containerRef} className="relative">
-            <button
-              type="button"
-              disabled={disabled}
-              aria-expanded={open}
-              aria-haspopup="listbox"
-              onClick={() => {
-                if (!disabled) {
-                  setOpen((current) => !current)
-                }
-              }}
-              className={`flex min-h-10 w-full items-center justify-between gap-2 rounded border px-3 py-2 text-left text-base ${
-                disabled
-                  ? 'cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400'
-                  : 'border-gray-300 bg-white text-teachstone-slate hover:border-gray-400'
-              }`}
+          {open && (
+            <ul
+              role="listbox"
+              aria-multiselectable="true"
+              className="absolute z-10 mt-1 max-h-72 w-full overflow-y-auto rounded border border-gray-300 bg-white py-1 shadow-lg"
             >
-              <span className="flex min-h-6 flex-1 flex-wrap items-center gap-2">
-                {selectedDimensions.length > 0 ? (
-                  selectedDimensions.map((dimension) => (
-                    <DimensionPill
-                      key={dimension.id}
-                      label={`${dimension.name} (${dimension.abbr})`}
-                      onRemove={() => toggleDimension(dimension.id)}
-                    />
-                  ))
-                ) : (
-                  <span className={disabled ? 'text-gray-400' : 'text-gray-500'}>
-                    Select dimension(s) to include
-                  </span>
-                )}
-              </span>
-              <span className="shrink-0 text-gray-400">▾</span>
-            </button>
-
-            {open && !disabled && (
-              <ul
-                role="listbox"
-                aria-multiselectable="true"
-                className="absolute z-10 mt-1 max-h-60 w-full overflow-y-auto rounded border border-gray-300 bg-white py-1 shadow-lg"
-              >
-                {CLASS_DIMENSIONS.map((dimension) => {
-                  const selected = focusedDimensionIds.includes(dimension.id)
-                  return (
-                    <li key={dimension.id} role="option" aria-selected={selected}>
-                      <label className="flex cursor-pointer items-center gap-3 px-4 py-2 hover:bg-gray-50">
-                        <input
-                          type="checkbox"
-                          checked={selected}
-                          onChange={() => toggleDimension(dimension.id)}
-                          className="h-4 w-4 accent-teachstone-teal"
-                        />
-                        <span className="text-sm text-teachstone-slate">
-                          {dimension.name} ({dimension.abbr})
-                        </span>
-                      </label>
-                    </li>
-                  )
-                })}
-              </ul>
-            )}
-          </div>
-
-          {!includeAllDimensions && focusedDimensionIds.length === 0 && (
-            <p className="mt-2 text-sm text-red-700">Select at least one dimension to continue.</p>
+              <li role="option" aria-selected={includeAllDimensions}>
+                <label className="flex cursor-pointer items-center gap-3 border-b border-gray-100 px-4 py-2.5 hover:bg-gray-50">
+                  <input
+                    type="checkbox"
+                    checked={includeAllDimensions}
+                    onChange={toggleAllDimensions}
+                    className="h-4 w-4 accent-teachstone-teal"
+                  />
+                  <span className="text-sm font-medium text-teachstone-slate">All dimensions</span>
+                </label>
+              </li>
+              {CLASS_DIMENSIONS.map((dimension) => {
+                const selected = includeAllDimensions || focusedDimensionIds.includes(dimension.id)
+                return (
+                  <li key={dimension.id} role="option" aria-selected={selected}>
+                    <label
+                      className={`flex items-center gap-3 px-4 py-2 hover:bg-gray-50 ${
+                        includeAllDimensions ? 'cursor-default' : 'cursor-pointer'
+                      }`}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={selected}
+                        onChange={() => toggleDimensionInSelection(dimension.id)}
+                        className="h-4 w-4 accent-teachstone-teal"
+                      />
+                      <span
+                        className={`text-sm ${
+                          includeAllDimensions ? 'text-teachstone-muted' : 'text-teachstone-slate'
+                        }`}
+                      >
+                        {dimension.name} ({dimension.abbr})
+                      </span>
+                    </label>
+                  </li>
+                )
+              })}
+            </ul>
           )}
         </div>
+
+        <p className="mt-2 text-sm text-teachstone-muted">
+          {includeAllDimensions
+            ? 'All dimensions are included by default. Uncheck any dimension to limit what appears in Enter Ranges.'
+            : focusedDimensionIds.length > 0
+              ? 'Only the dimensions you selected will appear in Enter Ranges.'
+              : 'Select at least one dimension, or choose All dimensions to include every dimension.'}
+        </p>
+
+        {!includeAllDimensions && focusedDimensionIds.length === 0 && (
+          <p className="mt-2 text-sm text-red-700">Select at least one dimension to continue.</p>
+        )}
       </div>
     </section>
   )
