@@ -53,6 +53,7 @@ export type ObservationMeta = {
 export type ClassIndicator = {
   id: string
   name: string
+  levels?: RangeValue[]
 }
 
 export type ClassDimension = {

@@ -16,13 +16,25 @@ const FORMAL_SCORES_BY_SUM: Record<number, NumericScore[]> = {
   10: [5, 6],
   11: [6, 7],
   12: [6, 7],
+  13: [6, 7],
+  14: [6, 7],
+  15: [6, 7],
+}
+
+const DEFAULT_INDICATOR_LEVELS: RangeValue[] = ['low', 'mid', 'high']
+
+function getAllowedLevels(indicator: ClassIndicator): RangeValue[] {
+  return indicator.levels ?? DEFAULT_INDICATOR_LEVELS
 }
 
 export function areAllIndicatorsComplete(
   indicators: ClassIndicator[],
   indicatorValues: Record<string, RangeValue | null>,
 ): boolean {
-  return indicators.every((indicator) => indicatorValues[indicator.id] != null)
+  return indicators.every((indicator) => {
+    const value = indicatorValues[indicator.id]
+    return value != null && getAllowedLevels(indicator).includes(value)
+  })
 }
 
 export function getIndicatorSum(

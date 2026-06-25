@@ -1,8 +1,21 @@
 import { AccordionStatusBar } from './AccordionStatusBar'
 import { RangeInput } from './RangeInput'
 import { ScoringInput } from './ScoringInput'
-import type { ClassDimension, DimensionCycleData, FlowDefinition } from '../types'
+import type { ClassDimension, DimensionCycleData, FlowDefinition, RangeValue } from '../types'
 import { getDimensionRecommendation } from '../utils/scoreRecommendation'
+
+const DEFAULT_INDICATOR_LEVELS: RangeValue[] = ['low', 'mid', 'high']
+
+function getIndicatorValue(
+  indicatorLevels: RangeValue[] | undefined,
+  storedValue: RangeValue | null | undefined,
+): RangeValue | null {
+  const allowedLevels = indicatorLevels ?? DEFAULT_INDICATOR_LEVELS
+  if (storedValue != null && allowedLevels.includes(storedValue)) {
+    return storedValue
+  }
+  return null
+}
 
 type DimensionAccordionProps = {
   dimension: ClassDimension
@@ -87,7 +100,11 @@ export function DimensionAccordion({
                     >
                       <span className="text-base text-teachstone-navy">{indicator.name}</span>
                       <RangeInput
-                        value={data.indicatorValues[indicator.id] ?? null}
+                        value={getIndicatorValue(
+                          indicator.levels,
+                          data.indicatorValues[indicator.id],
+                        )}
+                        options={indicator.levels}
                         onChange={(value) =>
                           onChange({
                             ...data,

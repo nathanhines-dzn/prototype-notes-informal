@@ -1,6 +1,6 @@
 import type { RangeValue } from '../types'
 
-const OPTIONS: { value: RangeValue; label: string }[] = [
+const ALL_OPTIONS: { value: RangeValue; label: string }[] = [
   { value: 'low', label: 'Low' },
   { value: 'mid', label: 'Mid' },
   { value: 'high', label: 'High' },
@@ -10,12 +10,17 @@ type RangeInputProps = {
   value: RangeValue | null
   onChange: (value: RangeValue | null) => void
   highlightedValues?: RangeValue[]
+  options?: RangeValue[]
 }
 
-export function RangeInput({ value, onChange, highlightedValues }: RangeInputProps) {
+export function RangeInput({ value, onChange, highlightedValues, options }: RangeInputProps) {
+  const visibleOptions = options
+    ? ALL_OPTIONS.filter((option) => options.includes(option.value))
+    : ALL_OPTIONS
+
   return (
-    <div className="flex items-center gap-[18px]">
-      {OPTIONS.map((option) => {
+    <div className="flex w-[270px] items-center justify-between gap-[18px]">
+      {visibleOptions.map((option) => {
         const selected = value === option.value
         const highlighted = !selected && highlightedValues?.includes(option.value)
         return (

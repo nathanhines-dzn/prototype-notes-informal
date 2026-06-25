@@ -19,10 +19,14 @@ export const CLASS_DIMENSIONS: ClassDimension[] = [
     abbr: 'NC',
     domain: 'Emotional Support',
     indicators: [
-      { id: 'nc-expressed-negativity', name: 'Expressed Negativity' },
-      { id: 'nc-punitive-control', name: 'Punitive Control' },
-      { id: 'nc-peer-negativity', name: 'Peer Negativity' },
-      { id: 'nc-severe-negativity', name: 'Severe Negativity' },
+      { id: 'nc-expressed-negativity', name: 'Expressed negativity' },
+      { id: 'nc-punitive-control', name: 'Punitive control' },
+      { id: 'nc-disrespect', name: 'Disrespect' },
+      {
+        id: 'nc-severe-negativity',
+        name: 'Severe negativity',
+        levels: ['low', 'high'],
+      },
     ],
   },
   {
@@ -79,10 +83,10 @@ export const CLASS_DIMENSIONS: ClassDimension[] = [
     abbr: 'ILF',
     domain: 'Classroom Organization',
     indicators: [
-      { id: 'ilf-educator-engagement', name: 'Educator Engagement' },
-      { id: 'ilf-variation', name: 'Variation in Approach' },
-      { id: 'ilf-facilitation', name: 'Effective Facilitation' },
-      { id: 'ilf-clarity', name: 'Clarity of Learning Objectives' },
+      { id: 'ilf-facilitation', name: 'Effective facilitation' },
+      { id: 'ilf-variation', name: 'Variation in approach' },
+      { id: 'ilf-child-interest', name: 'Child interest' },
+      { id: 'ilf-clarity', name: 'Clarity of learning objectives' },
     ],
   },
   {
@@ -104,9 +108,10 @@ export const CLASS_DIMENSIONS: ClassDimension[] = [
     domain: 'Instructional Support',
     indicators: [
       { id: 'qof-scaffolding', name: 'Scaffolding' },
-      { id: 'qof-feedback-loops', name: 'Feedback Loops' },
+      { id: 'qof-feedback-loops', name: 'Feedback loops' },
+      { id: 'qof-prompting-thought', name: 'Prompting thought processes' },
+      { id: 'qof-providing-information', name: 'Providing information' },
       { id: 'qof-encouragement', name: 'Encouragement and Affirmation' },
-      { id: 'qof-persist', name: 'Children Persist as Able' },
     ],
   },
   {
@@ -115,10 +120,11 @@ export const CLASS_DIMENSIONS: ClassDimension[] = [
     abbr: 'LM',
     domain: 'Instructional Support',
     indicators: [
-      { id: 'lm-conversation', name: 'Frequent Conversation' },
-      { id: 'lm-extensions', name: 'Communication Extensions' },
+      { id: 'lm-conversation', name: 'Frequent conversations' },
+      { id: 'lm-open-ended-questions', name: 'Open-ended questions' },
+      { id: 'lm-extensions', name: 'Communication extensions' },
       { id: 'lm-narration', name: 'Narration' },
-      { id: 'lm-advanced', name: 'Advanced Language' },
+      { id: 'lm-advanced', name: 'Advanced language' },
     ],
   },
 ]
