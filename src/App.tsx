@@ -5,6 +5,7 @@ import { usePrototype } from './context/PrototypeContext'
 import { CompletionPage } from './pages/CompletionPage'
 import { CreateObservationPage } from './pages/CreateObservationPage'
 import { CyclePage } from './pages/CyclePage'
+import { SummaryPage } from './pages/SummaryPage'
 
 function PrototypeApp() {
   const { currentStep, stepIndex } = usePrototype()
@@ -27,6 +28,15 @@ function PrototypeApp() {
     return (
       <AppShell showSidebar showMetaBar>
         <CyclePage key={stepIndex} />
+        <SettingsModal />
+      </AppShell>
+    )
+  }
+
+  if (currentStep.type === 'summary') {
+    return (
+      <AppShell showSidebar showMetaBar>
+        <SummaryPage />
         <SettingsModal />
       </AppShell>
     )

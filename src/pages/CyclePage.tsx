@@ -11,7 +11,7 @@ export function CyclePage() {
     expandedDimensionId,
     setExpandedDimensionId,
     updateDimensionData,
-    goToComplete,
+    goToSummary,
     getActiveDimensions,
   } = usePrototype()
   const contentRef = useRef<HTMLDivElement>(null)
@@ -91,8 +91,8 @@ export function CyclePage() {
 
         <FlowNav
           showBack={activeFlow.steps[0]?.type === 'create'}
-          nextLabel="Finish"
-          onNext={goToComplete}
+          nextLabel="Summary"
+          onNext={goToSummary}
         />
       </section>
     </div>

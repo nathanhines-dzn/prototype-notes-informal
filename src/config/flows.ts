@@ -3,6 +3,7 @@ import type { FlowDefinition } from '../types'
 const DEFAULT_STEPS: FlowDefinition['steps'] = [
   { type: 'create' },
   { type: 'cycle', cycleNumber: 1 },
+  { type: 'summary' },
   { type: 'complete' },
 ]
 

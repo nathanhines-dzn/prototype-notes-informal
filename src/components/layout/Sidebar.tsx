@@ -11,6 +11,8 @@ export function Sidebar() {
   const { activeFlow, currentStep, observationMeta } = usePrototype()
   const currentCycle = getCurrentCycleNumber(currentStep)
   const isComplete = currentStep.type === 'complete'
+  const isSummary = currentStep.type === 'summary'
+  const isPostCycle = isSummary || isComplete
 
   const items: SidebarItem[] = [
     { id: 'details', label: 'Observation Details', status: 'completed' },
@@ -18,7 +20,7 @@ export function Sidebar() {
     ...Array.from({ length: observationMeta.numberOfCycles }, (_, index) => {
       const cycleNumber = index + 1
       let status: SidebarItem['status'] = 'upcoming'
-      if (isComplete) status = 'completed'
+      if (isPostCycle) status = 'completed'
       else if (currentCycle === cycleNumber) status = 'active'
       else if (currentCycle !== null && cycleNumber < currentCycle) status = 'completed'
       return {
@@ -27,8 +29,16 @@ export function Sidebar() {
         status,
       }
     }),
-    { id: 'evidence', label: 'Evidence', status: isComplete ? 'upcoming' : 'upcoming' },
-    { id: 'summary', label: 'Summary', status: 'locked' },
+    {
+      id: 'evidence',
+      label: 'Evidence',
+      status: isPostCycle ? 'completed' : 'upcoming',
+    },
+    {
+      id: 'summary',
+      label: 'Summary',
+      status: isComplete ? 'completed' : isSummary ? 'active' : 'locked',
+    },
   ]
 
   return (

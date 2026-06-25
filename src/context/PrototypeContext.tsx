@@ -40,6 +40,7 @@ type PrototypeContextValue = {
   setFocusedDimensionIds: (ids: string[]) => void
   getActiveDimensions: () => ClassDimension[]
   goNext: () => void
+  goToSummary: () => void
   goToComplete: () => void
   goBack: () => void
   restart: () => void
@@ -165,6 +166,14 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
     setExpandedDimensionId(null)
   }, [activeFlow])
 
+  const goToSummary = useCallback(() => {
+    const summaryIndex = activeFlow.steps.findIndex((step) => step.type === 'summary')
+    if (summaryIndex >= 0) {
+      setStepIndex(summaryIndex)
+      setExpandedDimensionId(null)
+    }
+  }, [activeFlow])
+
   const goToComplete = useCallback(() => {
     const completeIndex = activeFlow.steps.findIndex((step) => step.type === 'complete')
     if (completeIndex >= 0) {
@@ -217,6 +226,7 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       setFocusedDimensionIds,
       getActiveDimensions,
       goNext,
+      goToSummary,
       goToComplete,
       goBack,
       restart,
@@ -238,6 +248,7 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       setFocusedDimensionIds,
       getActiveDimensions,
       goNext,
+      goToSummary,
       goToComplete,
       goBack,
       restart,

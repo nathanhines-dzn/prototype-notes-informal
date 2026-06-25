@@ -5,6 +5,7 @@ export type ScoreValue = RangeValue | NumericScore
 export type FlowStep =
   | { type: 'create' }
   | { type: 'cycle'; cycleNumber: number }
+  | { type: 'summary' }
   | { type: 'complete' }
 
 export type FlowDefinition = {
