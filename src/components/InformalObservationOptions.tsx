@@ -41,6 +41,7 @@ export function InformalObservationOptions() {
   const selectedDimensions = CLASS_DIMENSIONS.filter((dimension) =>
     includeAllDimensions ? true : focusedDimensionIds.includes(dimension.id),
   )
+  const dimensionCount = CLASS_DIMENSIONS.length
 
   const toggleAllDimensions = () => {
     setAllDimensionsRowChecked(!includeAllDimensions)
@@ -76,7 +77,7 @@ export function InformalObservationOptions() {
       <div className="w-full max-w-md py-2">
         <label className="mb-1 block text-base text-teachstone-slate">
           Dimension(s) of Focus
-          {!includeAllDimensions && <span className="text-red-700">*</span>}
+          <span className="text-red-700">*</span>
         </label>
 
         <div ref={containerRef} className="relative">
@@ -89,7 +90,7 @@ export function InformalObservationOptions() {
           >
             <span className="flex min-h-6 flex-1 flex-wrap items-center gap-2">
               {includeAllDimensions ? (
-                <span>All dimensions</span>
+                <span>All dimensions ({dimensionCount})</span>
               ) : selectedDimensions.length > 0 ? (
                 selectedDimensions.map((dimension) => (
                   <DimensionPill
@@ -119,7 +120,9 @@ export function InformalObservationOptions() {
                     onChange={toggleAllDimensions}
                     className="h-4 w-4 accent-teachstone-teal"
                   />
-                  <span className="text-sm font-medium text-teachstone-slate">All dimensions</span>
+                  <span className="text-sm font-medium text-teachstone-slate">
+                    All dimensions ({dimensionCount})
+                  </span>
                 </label>
               </li>
               {CLASS_DIMENSIONS.map((dimension) => {
@@ -154,7 +157,7 @@ export function InformalObservationOptions() {
 
         <p className="mt-2 text-sm text-teachstone-muted">
           {includeAllDimensions
-            ? "All dimensions are selected. Uncheck any you don't want to track."
+            ? `All ${dimensionCount} dimensions are selected. Uncheck any you don't want to track.`
             : focusedDimensionIds.length > 0
               ? 'Your observation includes only the dimensions you selected.'
               : 'Select only the dimensions you want to track. Your observation includes just those.'}

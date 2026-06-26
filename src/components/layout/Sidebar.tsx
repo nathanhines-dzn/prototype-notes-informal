@@ -1,4 +1,3 @@
-import type { ReactNode } from 'react'
 import checkCompleteIcon from '../../assets/icon-check-complete.png'
 import { getCurrentCycleNumber, usePrototype } from '../../context/PrototypeContext'
 
@@ -40,28 +39,6 @@ function SidebarNavItem({ item }: { item: SidebarItem }) {
           {PREVIEW_TOOLTIP}
         </span>
       )}
-    </div>
-  )
-}
-
-function SidebarDisabledButton({
-  children,
-  className,
-}: {
-  children: ReactNode
-  className: string
-}) {
-  return (
-    <div className="group relative">
-      <button type="button" disabled className={className}>
-        {children}
-      </button>
-      <span
-        role="tooltip"
-        className="pointer-events-none absolute left-0 top-full z-20 mt-1 w-max max-w-[220px] rounded-md bg-[#1A0238] px-3 py-1.5 text-xs font-medium leading-snug text-white opacity-0 shadow-lg transition-opacity duration-150 group-hover:opacity-100 group-focus-within:opacity-100"
-      >
-        {PREVIEW_TOOLTIP}
-      </span>
     </div>
   )
 }
@@ -117,29 +94,20 @@ export function Sidebar() {
           ))}
         </nav>
 
-        <div className="mt-6 border-t border-gray-200 px-4 pt-4">
-          <SidebarDisabledButton className="mb-4 flex w-full cursor-not-allowed items-center gap-3 rounded px-3 py-2 text-left text-base text-teachstone-slate opacity-60">
-            <span className="flex h-5 w-5 items-center justify-center rounded-full bg-teachstone-navy text-xs text-white">
-              +
-            </span>
-            Add a cycle
-          </SidebarDisabledButton>
-          <SidebarDisabledButton className="w-full cursor-not-allowed rounded border border-gray-300 px-4 py-2 text-sm text-teachstone-slate opacity-60">
-            Exit Observation
-          </SidebarDisabledButton>
-        </div>
-
-        <div
-          id={SIDEBAR_NOTICE_ID}
-          role="note"
-          className="mx-4 mt-4 mb-4 rounded border border-amber-200 bg-[#FFFBEB] border-l-4 border-l-amber-500 px-3 py-2 text-xs text-amber-900"
-        >
-          <p className="mb-0.5 font-semibold text-amber-950">Preview only</p>
-          <p>
-            This sidebar shows the full observation flow. Use{' '}
-            <span className="font-medium">Next</span> and <span className="font-medium">Back</span>{' '}
-            at the bottom to move through this prototype.
-          </p>
+        <div className="mt-6 border-t border-gray-200 py-4">
+          <div
+            id={SIDEBAR_NOTICE_ID}
+            role="note"
+            className="mx-4 mt-4 mb-4 rounded border border-amber-200 bg-[#FFFBEB] border-l-4 border-l-amber-500 px-3 py-2 text-xs text-amber-900"
+          >
+            <p className="mb-0.5 font-semibold text-amber-950">Preview only</p>
+            <p>
+              This sidebar shows the full observation flow. Use{' '}
+              <span className="font-medium">Next</span> and{' '}
+              <span className="font-medium">Back</span> at the bottom to move through this
+              prototype.
+            </p>
+          </div>
         </div>
       </div>
     </aside>
