@@ -47,7 +47,7 @@ export function ObservationScoresSection({
                 className="flex w-full items-center rounded-xl p-3 text-left shadow-[1px_1px_11px_0px_#d7e6ed] transition-colors hover:bg-gray-50"
               >
                 <img src={expandIcon} alt="" className="h-5 w-5 shrink-0" />
-                <span className="pl-3 text-base text-teachstone-navy">{reviewLabel}</span>
+                <span className="w-full pl-3 text-base text-teachstone-navy">{reviewLabel}</span>
               </button>
             </div>
           )}
@@ -62,7 +62,7 @@ export function ObservationScoresSection({
                     className="flex items-center gap-3 text-base text-teachstone-navy hover:underline"
                   >
                     <img src={expandIcon} alt="" className="h-5 w-5 shrink-0 rotate-45" />
-                    <span>See less details</span>
+                    <span className="w-full">See less details</span>
                   </button>
                   <span className="text-base text-teachstone-navy">
                     (Select the cycle you want to edit)

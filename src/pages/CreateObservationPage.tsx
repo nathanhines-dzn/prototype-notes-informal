@@ -1,6 +1,5 @@
 import type { ReactNode } from 'react'
 import { InformalObservationOptions } from '../components/InformalObservationOptions'
-import { InfoIcon } from '../components/layout/icons'
 import { usePrototype } from '../context/PrototypeContext'
 
 function Field({
@@ -44,9 +43,20 @@ export function CreateObservationPage() {
       </h1>
 
       <div className="mx-auto w-full max-w-5xl rounded-lg bg-white p-8 shadow-sm">
-        <div className="mb-8 flex items-center gap-3 rounded border border-teachstone-teal/20 bg-teachstone-card px-4 py-3 text-sm text-teachstone-muted whitespace-nowrap">
-          <InfoIcon className="size-4 shrink-0 text-teachstone-teal" aria-label="Information" />
-          This is a prototype. The form inputs below are not functional. Click Create Observation to start.
+        <div
+          role="note"
+          aria-labelledby="prototype-notice-heading"
+          className="mb-8 rounded border border-amber-200 bg-[#FFFBEB] border-l-4 border-l-amber-500 px-4 py-3 text-sm text-amber-900"
+        >
+          <p id="prototype-notice-heading" className="mb-1 font-semibold text-amber-950">
+            Please Read
+          </p>
+          <p>
+            This prototype mirrors our data collection workflow in myTeachstone, but it is
+            currently a visual preview. The form inputs below and other buttons in this site are not
+            functional.{' '}
+            <span className="font-medium">Click Create Observation to start.</span>
+          </p>
         </div>
 
         <div className="grid grid-cols-1 gap-x-16 gap-y-8 md:grid-cols-2">

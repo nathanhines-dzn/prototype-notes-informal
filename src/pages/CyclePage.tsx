@@ -89,11 +89,7 @@ export function CyclePage() {
           </button>
         </div>
 
-        <FlowNav
-          showBack={activeFlow.steps[0]?.type === 'create'}
-          nextLabel="Summary"
-          onNext={goToSummary}
-        />
+        <FlowNav showBack={activeFlow.steps[0]?.type === 'create'} onNext={goToSummary} />
       </section>
     </div>
   )

@@ -99,7 +99,7 @@ export function InformalObservationOptions() {
                   />
                 ))
               ) : (
-                <span className="text-gray-500">Select dimension(s) to include</span>
+                <span className="text-gray-500">Select dimensions to track</span>
               )}
             </span>
             <span className="shrink-0 text-gray-400">▾</span>
@@ -154,14 +154,14 @@ export function InformalObservationOptions() {
 
         <p className="mt-2 text-sm text-teachstone-muted">
           {includeAllDimensions
-            ? 'All dimensions are included by default. Uncheck any dimension to limit what appears in Enter Ranges.'
+            ? "All dimensions are selected. Uncheck any you don't want to track."
             : focusedDimensionIds.length > 0
-              ? 'Only the dimensions you selected will appear in Enter Ranges.'
-              : 'Select at least one dimension, or choose All dimensions to include every dimension.'}
+              ? 'Your observation includes only the dimensions you selected.'
+              : 'Select only the dimensions you want to track. Your observation includes just those.'}
         </p>
 
         {!includeAllDimensions && focusedDimensionIds.length === 0 && (
-          <p className="mt-2 text-sm text-red-700">Select at least one dimension to continue.</p>
+          <p className="mt-2 text-sm text-red-700">Select at least one dimension.</p>
         )}
       </div>
     </section>

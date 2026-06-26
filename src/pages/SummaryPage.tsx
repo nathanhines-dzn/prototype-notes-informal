@@ -72,7 +72,7 @@ export function SummaryPage() {
       </div>
 
       <section className="rounded-lg bg-white shadow-sm">
-        <FlowNav nextLabel="Complete" onNext={goToComplete} />
+        <FlowNav onNext={goToComplete} />
       </section>
     </div>
   )
