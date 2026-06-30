@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { ClassDimension, CycleNote } from '../../types'
-import { DimensionChipPicker } from './DimensionChipPicker'
+import { DimensionSelect } from './DimensionSelect'
 import { GroupedNotesReview } from './GroupedNotesReview'
 import { KeyboardShortcutHint } from './KeyboardShortcutHint'
 
@@ -60,25 +60,21 @@ export function NotesSection({
   return (
     <div className="h-fit space-y-4">
       <div ref={composerRef} className="space-y-3 rounded-[11px] bg-[#f4f8fa] px-6 py-5">
-        <div className="space-y-2">
-          <p id={`notes-dimension-${cycleNumber}-label`} className="text-sm font-medium text-teachstone-navy">
-            Dimension
-          </p>
-          <DimensionChipPicker
-            id={`notes-dimension-${cycleNumber}`}
-            dimensions={dimensions}
-            value={selectedDimensionId}
-            onChange={setSelectedDimensionId}
-          />
-        </div>
-
-        <div className="mt-3 flex flex-col space-y-2">
-          <label
-            htmlFor={`notes-draft-${cycleNumber}`}
-            className="text-sm text-teachstone-navy"
-          >
-            Observation note
-          </label>
+        <div className="flex flex-col space-y-2">
+          <div className="flex items-center justify-between gap-4">
+            <label
+              htmlFor={`notes-draft-${cycleNumber}`}
+              className="text-base font-semibold text-teachstone-navy"
+            >
+              New note
+            </label>
+            <DimensionSelect
+              id={`notes-dimension-${cycleNumber}`}
+              dimensions={dimensions}
+              value={selectedDimensionId}
+              onChange={setSelectedDimensionId}
+            />
+          </div>
           <textarea
             ref={textareaRef}
             id={`notes-draft-${cycleNumber}`}

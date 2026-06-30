@@ -82,7 +82,7 @@ export function DimensionAccordion({
       </div>
 
       {expanded && (
-        <div className="mx-7 border-t-[3px] border-white pt-6">
+        <div className="mx-7 border-t-[3px] border-white pt-3">
           <div className="space-y-6">
             {showStructuredNotes ? (
               <DimensionNotesList notes={dimensionNotes ?? []} />

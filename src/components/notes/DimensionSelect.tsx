@@ -22,7 +22,7 @@ export function DimensionSelect({
   const listboxId = useId()
 
   const selectedDimension = dimensions.find((dimension) => dimension.id === value)
-  const displayValue = selectedDimension?.abbr ?? 'Not Selected'
+  const displayValue = selectedDimension?.abbr ?? 'Not assigned'
 
   useEffect(() => {
     if (!open) return
@@ -88,7 +88,7 @@ export function DimensionSelect({
                 : 'text-teachstone-navy hover:bg-gray-50'
             }`}
           >
-            Not Selected
+            Not assigned
           </li>
           {dimensions.map((dimension) => (
             <li

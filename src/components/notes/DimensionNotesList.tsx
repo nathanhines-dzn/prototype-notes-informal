@@ -18,7 +18,7 @@ export function DimensionNotesList({ notes }: DimensionNotesListProps) {
   }, [notes.length])
 
   return (
-    <div className="rounded-lg border border-gray-100 bg-[#fafbfc]">
+    <div className="mb-3 rounded-lg border border-gray-100 bg-white">
       <button
         type="button"
         onClick={() => setExpanded((current) => !current)}
