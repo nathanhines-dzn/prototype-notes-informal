@@ -1,4 +1,5 @@
 import type { SummaryNoteEntry } from '../../data/summaryMockData'
+import { ChevronDown } from '../layout/icons'
 
 type DimensionNotesAccordionProps = {
   dimensionName: string
@@ -45,7 +46,9 @@ export function DimensionNotesAccordion({
                 : 'bg-teachstone-teal hover:bg-[#016688]'
             }`}
           >
-            {expanded ? '−' : '+'}
+            <ChevronDown
+              className={`size-3 transition ${expanded ? '' : '-rotate-90'}`}
+            />
           </button>
 
           <div className="flex min-w-0 flex-1 items-center gap-3">

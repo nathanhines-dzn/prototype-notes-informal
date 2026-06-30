@@ -1,4 +1,5 @@
 import type { ReactNode } from 'react'
+import { ChevronDown } from './layout/icons'
 
 type CycleSectionAccordionProps = {
   title: string
@@ -35,7 +36,9 @@ export function CycleSectionAccordion({
         className="cursor-pointer border-b border-gray-100 px-8 py-6"
       >
         <div className="flex items-center gap-5">
-          <span className="text-2xl text-teachstone-teal">{expanded ? '−' : '+'}</span>
+          <ChevronDown
+            className={`size-6 shrink-0 text-teachstone-teal transition ${expanded ? '' : '-rotate-90'}`}
+          />
           <div>
             <h2 className="text-2xl font-semibold text-teachstone-navy">{title}</h2>
             <p className="text-sm text-teachstone-muted">{subtitle}</p>

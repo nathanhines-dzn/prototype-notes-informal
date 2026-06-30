@@ -46,9 +46,8 @@ export function KeyboardShortcutHint({ shortcuts, label }: KeyboardShortcutHintP
         className="flex flex-wrap items-center gap-x-2 gap-y-1"
         aria-labelledby={label ? labelId : undefined}
       >
-        {shortcuts.map((shortcut, index) => (
+        {shortcuts.map((shortcut) => (
           <span key={shortcut.action} className="inline-flex items-center gap-2">
-            {index > 0 && <span aria-hidden className="text-gray-300">·</span>}
             <Shortcut keys={shortcut.keys} action={shortcut.action} />
           </span>
         ))}
