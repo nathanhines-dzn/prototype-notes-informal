@@ -8,6 +8,7 @@ import {
   parseBulletText,
 } from '../../utils/dimensionBulletNotes'
 import { ChevronDown } from '../layout/icons'
+import { KeyboardShortcutHint } from './KeyboardShortcutHint'
 
 type DimensionNoteGroupProps = {
   dimension: ClassDimension
@@ -108,13 +109,23 @@ export function DimensionNoteGroup({ dimension, notes, onSync }: DimensionNoteGr
           </span>
           <span className="shrink-0 text-sm text-teachstone-muted">({displayCount})</span>
         </button>
-        <button
-          type="button"
-          onClick={handleAddNote}
-          className="shrink-0 rounded-lg px-2 py-1 text-sm font-medium text-teachstone-teal hover:bg-teachstone-teal/5"
-        >
-          Add note
-        </button>
+        <div className="flex shrink-0 items-center gap-3">
+          {expanded && (
+            <KeyboardShortcutHint
+              shortcuts={[
+                { keys: ['Enter'], action: 'for new bullet' },
+                { keys: ['Shift', 'Enter'], action: 'to continue' },
+              ]}
+            />
+          )}
+          <button
+            type="button"
+            onClick={handleAddNote}
+            className="shrink-0 rounded-lg px-2 py-1 text-sm font-medium text-teachstone-teal hover:bg-teachstone-teal/5"
+          >
+            Add note
+          </button>
+        </div>
       </div>
 
       {expanded && (
@@ -133,11 +144,6 @@ export function DimensionNoteGroup({ dimension, notes, onSync }: DimensionNoteGr
             rows={3}
             className="min-h-20 w-full resize-y rounded-lg border border-gray-200 bg-white px-4 py-3 text-sm leading-relaxed text-teachstone-navy outline-none placeholder:text-gray-400 focus:ring-1 focus:ring-teachstone-teal"
           />
-          <p className="text-xs text-teachstone-muted">
-            <span className="font-medium text-teachstone-navy/70">Enter</span> starts a new bullet.{' '}
-            <span className="font-medium text-teachstone-navy/70">Shift+Enter</span> continues a
-            line.
-          </p>
         </div>
       )}
     </div>

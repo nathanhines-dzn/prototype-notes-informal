@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { ClassDimension, CycleNote } from '../../types'
 import { DimensionChipPicker } from './DimensionChipPicker'
 import { GroupedNotesReview } from './GroupedNotesReview'
+import { KeyboardShortcutHint } from './KeyboardShortcutHint'
 
 type NotesSectionProps = {
   cycleNumber: number
@@ -71,7 +72,7 @@ export function NotesSection({
           />
         </div>
 
-        <div className="mt-3 space-y-2">
+        <div className="mt-3 flex flex-col space-y-2">
           <label
             htmlFor={`notes-draft-${cycleNumber}`}
             className="text-sm text-teachstone-navy"
@@ -90,20 +91,24 @@ export function NotesSection({
           />
         </div>
 
-        <div className="flex items-center justify-between gap-4">
-          <p className="text-sm text-teachstone-muted">
-            <span className="font-bold text-black/70">Enter</span> adds a note.{' '}
-            <span className="font-bold text-black/70">Shift+Enter</span> starts a new
-            line.
-          </p>
-          <button
-            type="button"
-            onClick={handleAddNote}
-            disabled={!canAdd}
-            className="rounded-lg bg-teachstone-teal px-6 py-2 text-base text-white hover:bg-[#016688] disabled:cursor-not-allowed disabled:opacity-50"
-          >
-            Add note
-          </button>
+        <div className="flex justify-end">
+          <div className="flex items-center gap-3">
+            <KeyboardShortcutHint
+              label="Keyboard shortcuts:"
+              shortcuts={[
+                { keys: ['Enter'], action: 'to add note' },
+                { keys: ['Shift', 'Enter'], action: 'for new line' },
+              ]}
+            />
+            <button
+              type="button"
+              onClick={handleAddNote}
+              disabled={!canAdd}
+              className="rounded-lg bg-teachstone-teal px-6 py-2 text-base text-white hover:bg-[#016688] disabled:cursor-not-allowed disabled:opacity-50"
+            >
+              Add note
+            </button>
+          </div>
         </div>
       </div>
 
