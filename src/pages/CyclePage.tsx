@@ -20,6 +20,7 @@ export function CyclePage() {
     addCycleNote,
     updateCycleNote,
     deleteCycleNote,
+    syncDimensionNotes,
     getNotesForDimension,
     goToSummary,
     getActiveDimensions,
@@ -84,6 +85,9 @@ export function CyclePage() {
             onAddNote={(text, dimensionId) => addCycleNote(cycleNumber, text, dimensionId)}
             onUpdateNote={(noteId, patch) => updateCycleNote(cycleNumber, noteId, patch)}
             onDeleteNote={(noteId) => deleteCycleNote(cycleNumber, noteId)}
+            onSyncDimensionNotes={(dimensionId, parsedTexts) =>
+              syncDimensionNotes(cycleNumber, dimensionId, parsedTexts)
+            }
           />
         </CycleSectionAccordion>
       )}

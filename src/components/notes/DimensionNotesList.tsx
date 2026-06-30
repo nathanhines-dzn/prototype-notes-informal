@@ -10,7 +10,7 @@ export function DimensionNotesList({ notes }: DimensionNotesListProps) {
       <div className="space-y-1 rounded-lg bg-white/50 px-4 py-6">
         <p className="text-base text-teachstone-navy">No notes for this dimension yet.</p>
         <p className="text-sm text-teachstone-muted">
-          Capture what you see in Notes, then tag it here.
+          Tagged notes from this cycle will appear here when you score.
         </p>
       </div>
     )
@@ -25,7 +25,7 @@ export function DimensionNotesList({ notes }: DimensionNotesListProps) {
             key={note.id}
             className="rounded-lg border border-gray-200 bg-white p-3"
           >
-            <p className="text-sm leading-relaxed text-gray-900">{note.text}</p>
+            <p className="whitespace-pre-wrap text-sm leading-relaxed text-gray-900">{note.text}</p>
           </article>
         ))}
       </div>

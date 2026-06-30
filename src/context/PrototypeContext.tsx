@@ -26,6 +26,7 @@ import type {
   ObservationMeta,
 } from '../types'
 import { getDefaultExpandedCycleSection } from '../utils/cycleSection'
+import { rebuildDimensionNotes } from '../utils/dimensionBulletNotes'
 import {
   FLOW_STORAGE_KEY,
   getFlowIdFromUrl,
@@ -70,6 +71,7 @@ type PrototypeContextValue = {
     patch: Partial<Pick<CycleNote, 'text' | 'dimensionId'>>,
   ) => void
   deleteCycleNote: (cycleNumber: number, noteId: string) => void
+  syncDimensionNotes: (cycleNumber: number, dimensionId: string, parsedTexts: string[]) => void
   getNotesForDimension: (cycleNumber: number, dimensionId: string) => CycleNote[]
   getUntaggedNotes: (cycleNumber: number) => CycleNote[]
   updateDimensionData: (
@@ -349,6 +351,23 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
     })
   }, [])
 
+  const syncDimensionNotes = useCallback(
+    (cycleNumber: number, dimensionId: string, parsedTexts: string[]) => {
+      setCycleNotes((current) => {
+        const notes = current[cycleNumber] ?? []
+        const dimensionNotes = notes.filter((note) => note.dimensionId === dimensionId)
+        const otherNotes = notes.filter((note) => note.dimensionId !== dimensionId)
+        const rebuilt = rebuildDimensionNotes(dimensionNotes, parsedTexts, dimensionId)
+
+        return {
+          ...current,
+          [cycleNumber]: [...rebuilt, ...otherNotes],
+        }
+      })
+    },
+    [],
+  )
+
   const getNotesForDimension = useCallback(
     (cycleNumber: number, dimensionId: string): CycleNote[] => {
       return (cycleNotes[cycleNumber] ?? []).filter((note) => note.dimensionId === dimensionId)
@@ -394,6 +413,7 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       addCycleNote,
       updateCycleNote,
       deleteCycleNote,
+      syncDimensionNotes,
       getNotesForDimension,
       getUntaggedNotes,
       updateDimensionData,
@@ -425,6 +445,7 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       addCycleNote,
       updateCycleNote,
       deleteCycleNote,
+      syncDimensionNotes,
       getNotesForDimension,
       getUntaggedNotes,
       updateDimensionData,

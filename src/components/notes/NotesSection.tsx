@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { ClassDimension, CycleNote } from '../../types'
-import { CycleNoteItem } from './CycleNoteItem'
-import { DimensionSelect } from './DimensionSelect'
+import { DimensionChipPicker } from './DimensionChipPicker'
+import { GroupedNotesReview } from './GroupedNotesReview'
 
 type NotesSectionProps = {
   cycleNumber: number
@@ -13,6 +13,7 @@ type NotesSectionProps = {
     patch: Partial<Pick<CycleNote, 'text' | 'dimensionId'>>,
   ) => void
   onDeleteNote: (noteId: string) => void
+  onSyncDimensionNotes: (dimensionId: string, parsedTexts: string[]) => void
 }
 
 export function NotesSection({
@@ -22,18 +23,20 @@ export function NotesSection({
   onAddNote,
   onUpdateNote,
   onDeleteNote,
+  onSyncDimensionNotes,
 }: NotesSectionProps) {
   const [draftText, setDraftText] = useState('')
-  const [selectedDimensionId, setSelectedDimensionId] = useState<string | null>(
-    () => dimensions[0]?.id ?? null,
-  )
+  const [selectedDimensionId, setSelectedDimensionId] = useState<string | null>(null)
+  const composerRef = useRef<HTMLDivElement>(null)
+  const textareaRef = useRef<HTMLTextAreaElement>(null)
 
   useEffect(() => {
     setSelectedDimensionId((current) => {
-      if (current != null && dimensions.some((dimension) => dimension.id === current)) {
+      if (current == null) return null
+      if (dimensions.some((dimension) => dimension.id === current)) {
         return current
       }
-      return dimensions[0]?.id ?? null
+      return null
     })
   }, [dimensions])
 
@@ -43,59 +46,74 @@ export function NotesSection({
     if (!canAdd) return
     onAddNote(draftText, selectedDimensionId)
     setDraftText('')
+    textareaRef.current?.focus()
+  }
+
+  const handleDraftKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === 'Enter' && !event.shiftKey) {
+      event.preventDefault()
+      handleAddNote()
+    }
   }
 
   return (
     <div className="h-fit space-y-4">
-      <div className="space-y-2">
-        <div className="flex items-center justify-between gap-4">
-          <label
-            htmlFor={`notes-draft-${cycleNumber}`}
-            className="text-base text-teachstone-navy"
-          >
-            Observation note
-          </label>
-          <DimensionSelect
+      <div ref={composerRef} className="space-y-3 rounded-[11px] bg-[#f4f8fa] px-6 py-5">
+        <div className="space-y-2">
+          <p id={`notes-dimension-${cycleNumber}-label`} className="text-sm font-medium text-teachstone-navy">
+            Dimension
+          </p>
+          <DimensionChipPicker
             id={`notes-dimension-${cycleNumber}`}
             dimensions={dimensions}
             value={selectedDimensionId}
             onChange={setSelectedDimensionId}
           />
         </div>
-        <textarea
-          id={`notes-draft-${cycleNumber}`}
-          value={draftText}
-          onChange={(event) => setDraftText(event.target.value)}
-          placeholder="Write what you observed."
-          rows={4}
-          className="min-h-24 w-full resize-y rounded-[11px] border-0 bg-[#f4f8fa] px-8 py-6 text-base text-teachstone-navy outline-none placeholder:text-gray-400 focus:ring-1 focus:ring-teachstone-teal"
-        />
-      </div>
 
-      <div className="flex justify-end">
-        <button
-          type="button"
-          onClick={handleAddNote}
-          disabled={!canAdd}
-          className="rounded-lg bg-teachstone-teal px-6 py-2 text-base text-white hover:bg-[#016688] disabled:cursor-not-allowed disabled:opacity-50"
-        >
-          Add note
-        </button>
-      </div>
-
-      {notes.length > 0 && (
-        <div className="space-y-3 border-t border-gray-100 pt-6">
-          {notes.map((note) => (
-            <CycleNoteItem
-              key={note.id}
-              note={note}
-              dimensions={dimensions}
-              onUpdate={(patch) => onUpdateNote(note.id, patch)}
-              onDelete={() => onDeleteNote(note.id)}
-            />
-          ))}
+        <div className="mt-3 space-y-2">
+          <label
+            htmlFor={`notes-draft-${cycleNumber}`}
+            className="text-sm text-teachstone-navy"
+          >
+            Observation note
+          </label>
+          <textarea
+            ref={textareaRef}
+            id={`notes-draft-${cycleNumber}`}
+            value={draftText}
+            onChange={(event) => setDraftText(event.target.value)}
+            onKeyDown={handleDraftKeyDown}
+            placeholder="Write what you observed."
+            rows={4}
+            className="min-h-24 w-full resize-y rounded-[11px] border border-gray-300 bg-white px-6 py-4 text-base text-teachstone-navy outline-none placeholder:text-gray-400 focus:ring-1 focus:ring-teachstone-teal"
+          />
         </div>
-      )}
+
+        <div className="flex items-center justify-between gap-4">
+          <p className="text-sm text-teachstone-muted">
+            <span className="font-bold text-black/70">Enter</span> adds a note.{' '}
+            <span className="font-bold text-black/70">Shift+Enter</span> starts a new
+            line.
+          </p>
+          <button
+            type="button"
+            onClick={handleAddNote}
+            disabled={!canAdd}
+            className="rounded-lg bg-teachstone-teal px-6 py-2 text-base text-white hover:bg-[#016688] disabled:cursor-not-allowed disabled:opacity-50"
+          >
+            Add note
+          </button>
+        </div>
+      </div>
+
+      <GroupedNotesReview
+        notes={notes}
+        dimensions={dimensions}
+        onSyncDimensionNotes={onSyncDimensionNotes}
+        onUpdateNote={onUpdateNote}
+        onDeleteNote={onDeleteNote}
+      />
     </div>
   )
 }
