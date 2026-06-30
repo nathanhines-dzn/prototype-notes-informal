@@ -154,3 +154,9 @@ export function createEmptyAllCycleData(cycleCount: number): import('../types').
     Array.from({ length: cycleCount }, (_, index) => [index + 1, createEmptyCycleData()]),
   )
 }
+
+export function createEmptyCycleNotes(cycleCount: number): import('../types').CycleNotesData {
+  return Object.fromEntries(
+    Array.from({ length: cycleCount }, (_, index) => [index + 1, []]),
+  )
+}

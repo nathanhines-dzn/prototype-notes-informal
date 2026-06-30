@@ -20,6 +20,7 @@ export type FlowDefinition = {
   }
   features?: {
     showIndicatorScoring?: boolean
+    structuredNotes?: boolean
   }
   createForm: {
     title: string
@@ -32,6 +33,16 @@ export type FlowDefinition = {
   }
   steps: FlowStep[]
 }
+
+export type CycleNote = {
+  id: string
+  text: string
+  dimensionId: string | null
+}
+
+export type CycleSectionId = 'cycle-details' | 'notes' | 'enter-scoring'
+
+export type CycleNotesData = Record<number, CycleNote[]>
 
 export type DimensionCycleData = {
   notes: string

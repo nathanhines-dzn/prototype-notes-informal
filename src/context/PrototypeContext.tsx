@@ -11,16 +11,21 @@ import { getFlowById } from '../config/flows'
 import {
   CLASS_DIMENSIONS,
   createEmptyAllCycleData,
+  createEmptyCycleNotes,
   createEmptyDimensionData,
 } from '../data/classDimensions'
 import type {
   AllCycleData,
   ClassDimension,
+  CycleNote,
+  CycleNotesData,
+  CycleSectionId,
   DimensionCycleData,
   FlowDefinition,
   FlowStep,
   ObservationMeta,
 } from '../types'
+import { getDefaultExpandedCycleSection } from '../utils/cycleSection'
 import {
   FLOW_STORAGE_KEY,
   getFlowIdFromUrl,
@@ -38,8 +43,10 @@ type PrototypeContextValue = {
   currentStep: FlowStep
   observationMeta: ObservationMeta
   cycleData: AllCycleData
+  cycleNotes: CycleNotesData
   settingsOpen: boolean
   expandedDimensionId: string | null
+  expandedCycleSection: CycleSectionId | null
   includeAllDimensions: boolean
   focusedDimensionIds: string[]
   setSettingsOpen: (open: boolean) => void
@@ -55,6 +62,16 @@ type PrototypeContextValue = {
   goBack: () => void
   restart: () => void
   setExpandedDimensionId: (dimensionId: string | null) => void
+  toggleCycleSection: (sectionId: CycleSectionId) => void
+  addCycleNote: (cycleNumber: number, text: string, dimensionId?: string | null) => void
+  updateCycleNote: (
+    cycleNumber: number,
+    noteId: string,
+    patch: Partial<Pick<CycleNote, 'text' | 'dimensionId'>>,
+  ) => void
+  deleteCycleNote: (cycleNumber: number, noteId: string) => void
+  getNotesForDimension: (cycleNumber: number, dimensionId: string) => CycleNote[]
+  getUntaggedNotes: (cycleNumber: number) => CycleNote[]
   updateDimensionData: (
     cycleNumber: number,
     dimensionId: string,
@@ -78,8 +95,14 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
   const [cycleData, setCycleData] = useState<AllCycleData>(() =>
     createEmptyAllCycleData(DEFAULT_META.numberOfCycles),
   )
+  const [cycleNotes, setCycleNotes] = useState<CycleNotesData>(() =>
+    createEmptyCycleNotes(DEFAULT_META.numberOfCycles),
+  )
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [expandedDimensionId, setExpandedDimensionId] = useState<string | null>(null)
+  const [expandedCycleSection, setExpandedCycleSection] = useState<CycleSectionId | null>(() =>
+    getDefaultExpandedCycleSection(getFlowById(resolveInitialFlowId())),
+  )
   const [includeAllDimensions, setIncludeAllDimensionsState] = useState(true)
   const [focusedDimensionIds, setFocusedDimensionIdsState] = useState<string[]>([])
 
@@ -119,9 +142,12 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
 
   const resetSession = useCallback(
     (flowId: string) => {
+      const flow = getFlowById(flowId)
       setStepIndex(0)
       setCycleData(createEmptyAllCycleData(DEFAULT_META.numberOfCycles))
+      setCycleNotes(createEmptyCycleNotes(DEFAULT_META.numberOfCycles))
       setExpandedDimensionId(null)
+      setExpandedCycleSection(getDefaultExpandedCycleSection(flow))
       setIncludeAllDimensionsState(true)
       setFocusedDimensionIdsState([])
       setActiveFlowIdState(flowId)
@@ -271,6 +297,72 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
     [],
   )
 
+  const toggleCycleSection = useCallback((sectionId: CycleSectionId) => {
+    setExpandedCycleSection((current) => (current === sectionId ? null : sectionId))
+  }, [])
+
+  const addCycleNote = useCallback(
+    (cycleNumber: number, text: string, dimensionId: string | null = null) => {
+      const trimmed = text.trim()
+      if (!trimmed) return
+
+      const note: CycleNote = {
+        id: crypto.randomUUID(),
+        text: trimmed,
+        dimensionId,
+      }
+
+      setCycleNotes((current) => ({
+        ...current,
+        [cycleNumber]: [note, ...(current[cycleNumber] ?? [])],
+      }))
+    },
+    [],
+  )
+
+  const updateCycleNote = useCallback(
+    (
+      cycleNumber: number,
+      noteId: string,
+      patch: Partial<Pick<CycleNote, 'text' | 'dimensionId'>>,
+    ) => {
+      setCycleNotes((current) => {
+        const notes = current[cycleNumber] ?? []
+        return {
+          ...current,
+          [cycleNumber]: notes.map((note) =>
+            note.id === noteId ? { ...note, ...patch } : note,
+          ),
+        }
+      })
+    },
+    [],
+  )
+
+  const deleteCycleNote = useCallback((cycleNumber: number, noteId: string) => {
+    setCycleNotes((current) => {
+      const notes = current[cycleNumber] ?? []
+      return {
+        ...current,
+        [cycleNumber]: notes.filter((note) => note.id !== noteId),
+      }
+    })
+  }, [])
+
+  const getNotesForDimension = useCallback(
+    (cycleNumber: number, dimensionId: string): CycleNote[] => {
+      return (cycleNotes[cycleNumber] ?? []).filter((note) => note.dimensionId === dimensionId)
+    },
+    [cycleNotes],
+  )
+
+  const getUntaggedNotes = useCallback(
+    (cycleNumber: number): CycleNote[] => {
+      return (cycleNotes[cycleNumber] ?? []).filter((note) => note.dimensionId == null)
+    },
+    [cycleNotes],
+  )
+
   const value = useMemo<PrototypeContextValue>(
     () => ({
       activeFlow,
@@ -279,8 +371,10 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       currentStep,
       observationMeta: DEFAULT_META,
       cycleData,
+      cycleNotes,
       settingsOpen,
       expandedDimensionId,
+      expandedCycleSection,
       includeAllDimensions,
       focusedDimensionIds,
       setSettingsOpen,
@@ -296,6 +390,12 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       goBack,
       restart,
       setExpandedDimensionId,
+      toggleCycleSection,
+      addCycleNote,
+      updateCycleNote,
+      deleteCycleNote,
+      getNotesForDimension,
+      getUntaggedNotes,
       updateDimensionData,
     }),
     [
@@ -304,8 +404,10 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       stepIndex,
       currentStep,
       cycleData,
+      cycleNotes,
       settingsOpen,
       expandedDimensionId,
+      expandedCycleSection,
       includeAllDimensions,
       focusedDimensionIds,
       setActiveFlow,
@@ -319,6 +421,12 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       goToComplete,
       goBack,
       restart,
+      toggleCycleSection,
+      addCycleNote,
+      updateCycleNote,
+      deleteCycleNote,
+      getNotesForDimension,
+      getUntaggedNotes,
       updateDimensionData,
     ],
   )

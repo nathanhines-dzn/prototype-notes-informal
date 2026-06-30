@@ -1,16 +1,26 @@
 import { useEffect, useRef } from 'react'
+import { CycleSectionAccordion } from '../components/CycleSectionAccordion'
 import { DimensionAccordion } from '../components/DimensionAccordion'
 import { FlowNav } from '../components/FlowNav'
+import { NotesSection } from '../components/notes/NotesSection'
 import { getCurrentCycleNumber, usePrototype } from '../context/PrototypeContext'
+import type { CycleSectionId } from '../types'
 
 export function CyclePage() {
   const {
     activeFlow,
     currentStep,
     cycleData,
+    cycleNotes,
     expandedDimensionId,
+    expandedCycleSection,
     setExpandedDimensionId,
+    toggleCycleSection,
     updateDimensionData,
+    addCycleNote,
+    updateCycleNote,
+    deleteCycleNote,
+    getNotesForDimension,
     goToSummary,
     getActiveDimensions,
   } = usePrototype()
@@ -18,6 +28,7 @@ export function CyclePage() {
 
   const cycleNumber = getCurrentCycleNumber(currentStep)
   const activeDimensions = getActiveDimensions()
+  const showStructuredNotes = activeFlow.features?.structuredNotes === true
 
   useEffect(() => {
     if (
@@ -31,36 +42,60 @@ export function CyclePage() {
   if (!cycleNumber) return null
 
   const currentCycleData = cycleData[cycleNumber]
+  const currentCycleNotes = cycleNotes[cycleNumber] ?? []
 
   const scrollToTop = () => {
     contentRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
   }
 
+  const handleSectionToggle = (sectionId: CycleSectionId) => {
+    toggleCycleSection(sectionId)
+  }
+
+  const scoringSubtitle =
+    activeFlow.scoring.type === 'range'
+      ? 'Select indicator and dimension ranges'
+      : 'Select indicator and dimension scores'
+
   return (
-    <div ref={contentRef} className="px-[42px] pt-4 pb-[42px]">
-      <section className="mb-4 rounded-lg bg-white px-8 py-6 shadow-sm">
-        <div className="flex items-center gap-5">
-          <span className="text-2xl text-teachstone-teal">+</span>
-          <div>
-            <h2 className="text-2xl font-semibold text-teachstone-navy">Cycle Details</h2>
-            <p className="text-sm text-teachstone-muted">Enter cycle information</p>
-          </div>
-        </div>
-      </section>
+    <div ref={contentRef} className="flex flex-col gap-4 px-[42px] pt-4 pb-[42px]">
+      <CycleSectionAccordion
+        title="Cycle Details"
+        subtitle="Enter cycle information"
+        expanded={expandedCycleSection === 'cycle-details'}
+        onToggle={() => handleSectionToggle('cycle-details')}
+        className="mb-0"
+      >
+        <p className="text-sm text-teachstone-muted">Enter cycle information</p>
+      </CycleSectionAccordion>
 
-      <section className="rounded-lg bg-white shadow-sm">
-        <div className="border-b border-gray-100 px-8 py-6">
-          <div className="flex items-center gap-5">
-            <span className="text-2xl text-teachstone-teal">−</span>
-            <div>
-              <h2 className="text-2xl font-semibold text-teachstone-navy">{activeFlow.scoring.sectionLabel}</h2>
-              <p className="text-sm text-teachstone-muted">
-                Select indicator and dimension {activeFlow.scoring.type === 'range' ? 'ranges' : 'scores'}
-              </p>
-            </div>
-          </div>
-        </div>
+      {showStructuredNotes && (
+        <CycleSectionAccordion
+          title="Notes"
+          subtitle="Add notes for each dimension observed"
+          expanded={expandedCycleSection === 'notes'}
+          onToggle={() => handleSectionToggle('notes')}
+          className="mb-0"
+        >
+          <NotesSection
+            cycleNumber={cycleNumber}
+            notes={currentCycleNotes}
+            dimensions={activeDimensions}
+            onAddNote={(text, dimensionId) => addCycleNote(cycleNumber, text, dimensionId)}
+            onUpdateNote={(noteId, patch) => updateCycleNote(cycleNumber, noteId, patch)}
+            onDeleteNote={(noteId) => deleteCycleNote(cycleNumber, noteId)}
+          />
+        </CycleSectionAccordion>
+      )}
 
+      <CycleSectionAccordion
+        title={activeFlow.scoring.sectionLabel}
+        subtitle={scoringSubtitle}
+        expanded={expandedCycleSection === 'enter-scoring'}
+        onToggle={() => handleSectionToggle('enter-scoring')}
+        className="mb-0"
+        bodyClassName="p-0"
+      >
         <div className="space-y-4 px-8 py-6">
           {activeDimensions.map((dimension) => (
             <DimensionAccordion
@@ -68,6 +103,9 @@ export function CyclePage() {
               dimension={dimension}
               data={currentCycleData[dimension.id]}
               flow={activeFlow}
+              dimensionNotes={
+                showStructuredNotes ? getNotesForDimension(cycleNumber, dimension.id) : undefined
+              }
               expanded={expandedDimensionId === dimension.id}
               onToggleExpand={() =>
                 setExpandedDimensionId(
@@ -90,7 +128,7 @@ export function CyclePage() {
         </div>
 
         <FlowNav showBack={activeFlow.steps[0]?.type === 'create'} onNext={goToSummary} />
-      </section>
+      </CycleSectionAccordion>
     </div>
   )
 }
