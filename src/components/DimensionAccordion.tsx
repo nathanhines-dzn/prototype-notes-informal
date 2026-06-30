@@ -1,7 +1,14 @@
 import { AccordionStatusBar } from './AccordionStatusBar'
+import { DimensionNotesList } from './notes/DimensionNotesList'
 import { RangeInput } from './RangeInput'
 import { ScoringInput } from './ScoringInput'
-import type { ClassDimension, DimensionCycleData, FlowDefinition, RangeValue } from '../types'
+import type {
+  ClassDimension,
+  CycleNote,
+  DimensionCycleData,
+  FlowDefinition,
+  RangeValue,
+} from '../types'
 import { getDimensionRecommendation } from '../utils/scoreRecommendation'
 
 const DEFAULT_INDICATOR_LEVELS: RangeValue[] = ['low', 'mid', 'high']
@@ -21,6 +28,7 @@ type DimensionAccordionProps = {
   dimension: ClassDimension
   data: DimensionCycleData
   flow: FlowDefinition
+  dimensionNotes?: CycleNote[]
   expanded: boolean
   onToggleExpand: () => void
   onChange: (next: DimensionCycleData) => void
@@ -30,10 +38,12 @@ export function DimensionAccordion({
   dimension,
   data,
   flow,
+  dimensionNotes,
   expanded,
   onToggleExpand,
   onChange,
 }: DimensionAccordionProps) {
+  const showStructuredNotes = flow.features?.structuredNotes === true
   const showIndicatorScoring = flow.features?.showIndicatorScoring !== false
   const recommendation = getDimensionRecommendation(
     dimension.indicators,
@@ -74,21 +84,25 @@ export function DimensionAccordion({
       {expanded && (
         <div className="mx-7 border-t-[3px] border-white pt-6">
           <div className="space-y-6">
-            <div className="space-y-2">
-              <label
-                htmlFor={`notes-${dimension.id}`}
-                className="block text-base text-teachstone-navy"
-              >
-                Observation Notes
-              </label>
-              <textarea
-                id={`notes-${dimension.id}`}
-                value={data.notes}
-                onChange={(event) => onChange({ ...data, notes: event.target.value })}
-                placeholder="Enter dimension specific observation notes."
-                className="min-h-24 w-full resize-y rounded-[11px] border-0 bg-white px-8 py-6 text-base text-gray-400 outline-none focus:text-teachstone-navy"
-              />
-            </div>
+            {showStructuredNotes ? (
+              <DimensionNotesList notes={dimensionNotes ?? []} />
+            ) : (
+              <div className="space-y-2">
+                <label
+                  htmlFor={`notes-${dimension.id}`}
+                  className="block text-base text-teachstone-navy"
+                >
+                  Observation Notes
+                </label>
+                <textarea
+                  id={`notes-${dimension.id}`}
+                  value={data.notes}
+                  onChange={(event) => onChange({ ...data, notes: event.target.value })}
+                  placeholder="Enter dimension specific observation notes."
+                  className="min-h-24 w-full resize-y rounded-[11px] border-0 bg-white px-8 py-6 text-base text-gray-400 outline-none focus:text-teachstone-navy"
+                />
+              </div>
+            )}
 
             <div className="border-t-[3px] border-white pt-6 pb-6">
               {showIndicatorScoring && (
