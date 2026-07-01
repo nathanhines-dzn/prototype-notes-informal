@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
+import { useToast } from '../../context/ToastContext'
 import type { ClassDimension, CycleNote } from '../../types'
 import { DimensionSelect } from './DimensionSelect'
 import { GroupedNotesReview } from './GroupedNotesReview'
@@ -26,6 +27,7 @@ export function NotesSection({
   onDeleteNote,
   onSyncDimensionNotes,
 }: NotesSectionProps) {
+  const { showToast } = useToast()
   const [draftText, setDraftText] = useState('')
   const [selectedDimensionId, setSelectedDimensionId] = useState<string | null>(null)
   const composerRef = useRef<HTMLDivElement>(null)
@@ -45,7 +47,10 @@ export function NotesSection({
 
   const handleAddNote = () => {
     if (!canAdd) return
+
+    const dimension = dimensions.find((entry) => entry.id === selectedDimensionId)
     onAddNote(draftText, selectedDimensionId)
+    showToast(dimension ? `Note added to ${dimension.abbr}` : 'Note saved')
     setDraftText('')
     textareaRef.current?.focus()
   }
@@ -61,10 +66,10 @@ export function NotesSection({
     <div className="h-fit space-y-4">
       <div ref={composerRef} className="space-y-3 rounded-[11px] bg-[#f4f8fa] px-6 py-5">
         <div className="flex flex-col space-y-2">
-          <div className="flex items-center justify-between gap-4">
+          <div className="mb-3 flex items-end justify-between gap-4">
             <label
               htmlFor={`notes-draft-${cycleNumber}`}
-              className="text-base font-semibold text-teachstone-navy"
+              className="h-full text-base font-semibold text-teachstone-navy"
             >
               New note
             </label>

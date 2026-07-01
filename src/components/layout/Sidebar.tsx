@@ -1,5 +1,5 @@
-import checkCompleteIcon from '../../assets/icon-check-complete.png'
 import { getCurrentCycleNumber, usePrototype } from '../../context/PrototypeContext'
+import { Check } from './icons'
 
 const SIDEBAR_NOTICE_ID = 'sidebar-prototype-notice'
 const PREVIEW_TOOLTIP = 'Preview only — use Next to continue.'
@@ -27,7 +27,12 @@ function SidebarNavItem({ item }: { item: SidebarItem }) {
       >
         <span>{item.label}</span>
         {item.status === 'completed' && (
-          <img src={checkCompleteIcon} alt="Completed" className="h-4 w-4 shrink-0" />
+          <span
+            aria-label="Completed"
+            className="inline-flex size-4 shrink-0 items-center justify-center rounded-full bg-teachstone-complete"
+          >
+            <Check className="size-2.5 text-white" />
+          </span>
         )}
       </div>
 

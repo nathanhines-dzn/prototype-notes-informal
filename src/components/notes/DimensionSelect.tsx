@@ -22,7 +22,9 @@ export function DimensionSelect({
   const listboxId = useId()
 
   const selectedDimension = dimensions.find((dimension) => dimension.id === value)
-  const displayValue = selectedDimension?.abbr ?? 'Not assigned'
+  const displayValue = selectedDimension
+    ? `${selectedDimension.name} (${selectedDimension.abbr})`
+    : 'Not assigned'
 
   useEffect(() => {
     if (!open) return
