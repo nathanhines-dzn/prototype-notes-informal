@@ -64,15 +64,23 @@ export function NotesSection({
 
   return (
     <div className="h-fit space-y-4">
-      <div ref={composerRef} className="space-y-3 rounded-[11px] bg-[#f4f8fa] px-6 py-5">
+      <div ref={composerRef} className="mb-5 space-y-3 rounded-[11px] border border-gray-200 bg-[#f4f8fa] px-6 py-5">
         <div className="flex flex-col space-y-2">
           <div className="mb-3 flex items-end justify-between gap-4">
-            <label
-              htmlFor={`notes-draft-${cycleNumber}`}
-              className="h-full text-base font-semibold text-teachstone-navy"
-            >
-              New note
-            </label>
+            <div className="min-w-0">
+              <label
+                htmlFor={`notes-draft-${cycleNumber}`}
+                className="h-full text-base font-semibold text-teachstone-navy"
+              >
+                New note
+              </label>
+              <p
+                id={`notes-draft-helper-${cycleNumber}`}
+                className="mt-0 text-sm text-teachstone-muted"
+              >
+                One interaction per note. Tag a dimension when you add it, or assign after.
+              </p>
+            </div>
             <DimensionSelect
               id={`notes-dimension-${cycleNumber}`}
               dimensions={dimensions}
@@ -86,8 +94,9 @@ export function NotesSection({
             value={draftText}
             onChange={(event) => setDraftText(event.target.value)}
             onKeyDown={handleDraftKeyDown}
-            placeholder="Write what you observed."
+            placeholder="e.g., Teacher knelt to eye level when child became frustrated."
             rows={4}
+            aria-describedby={`notes-draft-helper-${cycleNumber}`}
             className="min-h-24 w-full resize-y rounded-[11px] border border-gray-300 bg-white px-6 py-4 text-base text-teachstone-navy outline-none placeholder:text-gray-400 focus:ring-1 focus:ring-teachstone-teal"
           />
         </div>

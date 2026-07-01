@@ -25,7 +25,16 @@ export function GroupedNotesReview({
   const domainGroups = groupDimensionsByDomain(dimensions)
 
   if (notes.length === 0) {
-    return null
+    return (
+      <div className="border-t border-gray-100 pt-5">
+        <div className="rounded-lg border border-gray-200 bg-[#f4f8fa] px-6 py-8 text-center">
+          <p className="text-sm font-semibold text-teachstone-navy">Your notes will show up here.</p>
+          <p className="mt-1 text-sm text-teachstone-muted">
+            Tag a dimension to link them to scores.
+          </p>
+        </div>
+      </div>
+    )
   }
 
   return (
