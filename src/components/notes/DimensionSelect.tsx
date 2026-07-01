@@ -61,7 +61,7 @@ export function DimensionSelect({
         aria-expanded={open}
         aria-controls={listboxId}
         onClick={() => setOpen((current) => !current)}
-        className="flex items-center gap-0.5 rounded-full border border-[#7e7d85] bg-white px-2 py-1 shadow-[0px_1px_0.5px_rgba(0,0,0,0.04),0px_0px_0px_rgba(0,0,0,0.04)]"
+        className="flex items-center gap-0.5 rounded-full border border-[#d1d5dc] bg-white px-2 py-1 shadow-[0px_1px_0.5px_rgba(0,0,0,0.04),0px_0px_0px_rgba(0,0,0,0.04)]"
       >
         <span className="px-0.5 text-sm font-semibold leading-5 text-[#706f77]">Dimension</span>
         <span className="mx-0.5 h-3.5 w-px shrink-0 bg-black/10" aria-hidden />
