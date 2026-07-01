@@ -16,18 +16,18 @@ type DimensionNoteGroupProps = {
   onSync: (parsedTexts: string[]) => void
 }
 
+const BULLET_PREFIX = '• '
+
+function startsWithBullet(text: string): boolean {
+  return /^\s*[•\-*]/.test(text)
+}
+
 export function DimensionNoteGroup({ dimension, notes, onSync }: DimensionNoteGroupProps) {
-  const [expanded, setExpanded] = useState(notes.length > 0)
+  const [expanded, setExpanded] = useState(false)
   const [draftText, setDraftText] = useState(() => notesToBulletText(notes))
   const [isDirty, setIsDirty] = useState(false)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
   const knownTextsRef = useRef(parseBulletText(notesToBulletText(notes)))
-
-  useEffect(() => {
-    if (notes.length > 0) {
-      setExpanded(true)
-    }
-  }, [notes.length])
 
   useEffect(() => {
     const nextTexts = parseBulletText(notesToBulletText(notes))
@@ -54,6 +54,20 @@ export function DimensionNoteGroup({ dimension, notes, onSync }: DimensionNoteGr
     knownTextsRef.current = parsed
   }
 
+  const ensureEmptyDraftHasBullet = () => {
+    if (draftText.trim()) {
+      return
+    }
+
+    setDraftText(BULLET_PREFIX)
+    requestAnimationFrame(() => {
+      const textarea = textareaRef.current
+      if (textarea) {
+        textarea.setSelectionRange(BULLET_PREFIX.length, BULLET_PREFIX.length)
+      }
+    })
+  }
+
   const handleAddNote = () => {
     setExpanded(true)
     requestAnimationFrame(() => {
@@ -61,16 +75,21 @@ export function DimensionNoteGroup({ dimension, notes, onSync }: DimensionNoteGr
       setDraftText((current) => {
         const trimmed = current.trimEnd()
         if (!trimmed) {
-          return '• '
+          return BULLET_PREFIX
         }
-        return `${trimmed}\n• `
+        return `${trimmed}\n${BULLET_PREFIX}`
       })
       setIsDirty(true)
     })
   }
 
   const handleKeyDown = (event: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (event.key !== 'Enter' || event.shiftKey) {
+    if (event.key === 'Enter' && event.shiftKey) {
+      event.preventDefault()
+      return
+    }
+
+    if (event.key !== 'Enter') {
       return
     }
 
@@ -80,7 +99,7 @@ export function DimensionNoteGroup({ dimension, notes, onSync }: DimensionNoteGr
     const end = textarea.selectionEnd
     const before = draftText.slice(0, start)
     const after = draftText.slice(end)
-    const insert = '\n• '
+    const insert = `\n${BULLET_PREFIX}`
     const nextText = `${before}${insert}${after}`
 
     setDraftText(nextText)
@@ -112,10 +131,7 @@ export function DimensionNoteGroup({ dimension, notes, onSync }: DimensionNoteGr
         <div className="flex shrink-0 items-center gap-3">
           {expanded && (
             <KeyboardShortcutHint
-              shortcuts={[
-                { keys: ['Enter'], action: 'for new bullet' },
-                { keys: ['Shift', 'Enter'], action: 'to continue' },
-              ]}
+              shortcuts={[{ keys: ['Enter'], action: 'for new bullet' }]}
             />
           )}
           <button
@@ -134,8 +150,13 @@ export function DimensionNoteGroup({ dimension, notes, onSync }: DimensionNoteGr
             ref={textareaRef}
             id={`dimension-notes-${dimension.id}`}
             value={draftText}
+            onFocus={ensureEmptyDraftHasBullet}
             onChange={(event) => {
-              setDraftText(event.target.value)
+              let next = event.target.value
+              if (!draftText.trim() && next.trim() && !startsWithBullet(next)) {
+                next = `${BULLET_PREFIX}${next}`
+              }
+              setDraftText(next)
               setIsDirty(true)
             }}
             onBlur={handleBlur}

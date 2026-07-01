@@ -2,9 +2,23 @@ import type { CycleNote } from '../types'
 
 const BULLET_PREFIX = '• '
 
-/** Flatten internal newlines so each note is one bullet line. */
+/** Normalize line endings and trim outer whitespace; preserve internal line breaks. */
 export function normalizeNoteText(text: string): string {
-  return text.replace(/\r\n/g, '\n').replace(/\n+/g, ' ').trim()
+  return text.replace(/\r\n/g, '\n').trim()
+}
+
+function noteToBulletBlock(text: string): string {
+  const normalized = normalizeNoteText(text)
+  if (!normalized) {
+    return ''
+  }
+
+  const [firstLine, ...rest] = normalized.split('\n')
+  if (rest.length === 0) {
+    return `${BULLET_PREFIX}${firstLine}`
+  }
+
+  return `${BULLET_PREFIX}${firstLine}\n${rest.join('\n')}`
 }
 
 /** Notes are stored newest-first; bullets display oldest-first. */
@@ -14,7 +28,8 @@ export function notesToDisplayOrder(notes: CycleNote[]): CycleNote[] {
 
 export function notesToBulletText(notes: CycleNote[]): string {
   return notesToDisplayOrder(notes)
-    .map((note) => `${BULLET_PREFIX}${normalizeNoteText(note.text)}`)
+    .map((note) => noteToBulletBlock(note.text))
+    .filter((block) => block.length > 0)
     .join('\n')
 }
 
@@ -43,7 +58,7 @@ export function parseBulletText(text: string): string[] {
     }
 
     if (current.trim()) {
-      current = `${current} ${trimmed}`.trim()
+      current = `${current}\n${line}`
     } else if (trimmed) {
       current = trimmed
     }
@@ -89,7 +104,7 @@ export function appendBulletsToDraft(draftText: string, newTexts: string[]): str
     return draftText
   }
 
-  const suffix = newTexts.map((text) => `${BULLET_PREFIX}${text}`).join('\n')
+  const suffix = newTexts.map((text) => noteToBulletBlock(text)).filter((block) => block.length > 0).join('\n')
   const trimmedDraft = draftText.trimEnd()
 
   if (!trimmedDraft) {

@@ -22,7 +22,14 @@ export function GroupedNotesReview({
   onDeleteNote,
 }: GroupedNotesReviewProps) {
   const { untagged, byDimensionId } = partitionNotesByDimension(notes)
-  const domainGroups = groupDimensionsByDomain(dimensions)
+  const domainGroupsWithNotes = groupDimensionsByDomain(dimensions)
+    .map((domainGroup) => ({
+      ...domainGroup,
+      dimensions: domainGroup.dimensions.filter(
+        (dimension) => (byDimensionId.get(dimension.id) ?? []).length > 0,
+      ),
+    }))
+    .filter((domainGroup) => domainGroup.dimensions.length > 0)
 
   if (notes.length === 0) {
     return (
@@ -63,24 +70,26 @@ export function GroupedNotesReview({
         </section>
       )}
 
-      <section className="space-y-4">
-        <h3 className="text-base font-semibold text-teachstone-navy">Notes by dimension</h3>
-        {domainGroups.map((domainGroup) => (
-          <div key={domainGroup.domain} className="space-y-2">
-            <h4 className="text-sm font-medium text-teachstone-muted">{domainGroup.domain}</h4>
-            <div className="space-y-2">
-              {domainGroup.dimensions.map((dimension) => (
-                <DimensionNoteGroup
-                  key={dimension.id}
-                  dimension={dimension}
-                  notes={byDimensionId.get(dimension.id) ?? []}
-                  onSync={(parsedTexts) => onSyncDimensionNotes(dimension.id, parsedTexts)}
-                />
-              ))}
+      {domainGroupsWithNotes.length > 0 && (
+        <section className="space-y-4">
+          <h3 className="text-base font-semibold text-teachstone-navy">Notes by dimension</h3>
+          {domainGroupsWithNotes.map((domainGroup) => (
+            <div key={domainGroup.domain} className="space-y-2">
+              <h4 className="text-sm font-medium text-teachstone-muted">{domainGroup.domain}</h4>
+              <div className="space-y-2">
+                {domainGroup.dimensions.map((dimension) => (
+                  <DimensionNoteGroup
+                    key={dimension.id}
+                    dimension={dimension}
+                    notes={byDimensionId.get(dimension.id) ?? []}
+                    onSync={(parsedTexts) => onSyncDimensionNotes(dimension.id, parsedTexts)}
+                  />
+                ))}
+              </div>
             </div>
-          </div>
-        ))}
-      </section>
+          ))}
+        </section>
+      )}
     </div>
   )
 }
