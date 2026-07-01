@@ -50,7 +50,7 @@ export function NotesSection({
 
     const dimension = dimensions.find((entry) => entry.id === selectedDimensionId)
     onAddNote(draftText, selectedDimensionId)
-    showToast(dimension ? `Note added to ${dimension.abbr}` : 'Note saved')
+    showToast(dimension ? `Note added to ${dimension.name}` : 'Note saved')
     setDraftText('')
     textareaRef.current?.focus()
   }
@@ -78,7 +78,7 @@ export function NotesSection({
                 id={`notes-draft-helper-${cycleNumber}`}
                 className="mt-0 text-sm text-teachstone-muted"
               >
-                One interaction per note. Tag a dimension when you add it, or assign after.
+                One interaction per note. Tag a dimension now or later.
               </p>
             </div>
             <DimensionSelect
