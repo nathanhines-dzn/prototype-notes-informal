@@ -72,7 +72,7 @@ export function NotesSection({
                 htmlFor={`notes-draft-${cycleNumber}`}
                 className="h-full text-base font-semibold text-teachstone-navy"
               >
-                New note
+                Add new note
               </label>
               <p
                 id={`notes-draft-helper-${cycleNumber}`}
