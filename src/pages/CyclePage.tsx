@@ -82,6 +82,7 @@ export function CyclePage() {
             cycleNumber={cycleNumber}
             notes={currentCycleNotes}
             dimensions={activeDimensions}
+            notesLayout={activeFlow.features?.notesLayout ?? 'grouped'}
             onAddNote={(text, dimensionId) => addCycleNote(cycleNumber, text, dimensionId)}
             onUpdateNote={(noteId, patch) => updateCycleNote(cycleNumber, noteId, patch)}
             onDeleteNote={(noteId) => deleteCycleNote(cycleNumber, noteId)}

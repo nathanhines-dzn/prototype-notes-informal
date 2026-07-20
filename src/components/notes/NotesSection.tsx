@@ -3,12 +3,14 @@ import { useToast } from '../../context/ToastContext'
 import type { ClassDimension, CycleNote } from '../../types'
 import { DimensionSelect } from './DimensionSelect'
 import { GroupedNotesReview } from './GroupedNotesReview'
+import { KanbanNotesBoard } from './kanban/KanbanNotesBoard'
 import { KeyboardShortcutHint } from './KeyboardShortcutHint'
 
 type NotesSectionProps = {
   cycleNumber: number
   notes: CycleNote[]
   dimensions: ClassDimension[]
+  notesLayout?: 'grouped' | 'kanban'
   onAddNote: (text: string, dimensionId: string | null) => void
   onUpdateNote: (
     noteId: string,
@@ -26,6 +28,7 @@ export function NotesSection({
   onUpdateNote,
   onDeleteNote,
   onSyncDimensionNotes,
+  notesLayout = 'grouped',
 }: NotesSectionProps) {
   const { showToast } = useToast()
   const [draftText, setDraftText] = useState('')
@@ -122,13 +125,22 @@ export function NotesSection({
         </div>
       </div>
 
-      <GroupedNotesReview
-        notes={notes}
-        dimensions={dimensions}
-        onSyncDimensionNotes={onSyncDimensionNotes}
-        onUpdateNote={onUpdateNote}
-        onDeleteNote={onDeleteNote}
-      />
+      {notesLayout === 'kanban' ? (
+        <KanbanNotesBoard
+          notes={notes}
+          dimensions={dimensions}
+          onUpdateNote={onUpdateNote}
+          onDeleteNote={onDeleteNote}
+        />
+      ) : (
+        <GroupedNotesReview
+          notes={notes}
+          dimensions={dimensions}
+          onSyncDimensionNotes={onSyncDimensionNotes}
+          onUpdateNote={onUpdateNote}
+          onDeleteNote={onDeleteNote}
+        />
+      )}
     </div>
   )
 }
