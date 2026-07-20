@@ -124,6 +124,31 @@ export const FLOWS: FlowDefinition[] = [
     },
     steps: DEFAULT_STEPS,
   },
+  {
+    id: 'informal-2-notetaking-v1',
+    label: 'Informal 2.0 (Notetaking V1)',
+    scoring: {
+      type: 'range',
+      overallLabel: 'Overall Range',
+      sectionLabel: 'Enter Ranges',
+      overallToggleLabel: 'Range',
+    },
+    features: {
+      showIndicatorScoring: true,
+      structuredNotes: true,
+      notesLayout: 'dimension-textareas',
+    },
+    createForm: {
+      title: 'Create CLASS 2nd Edition - Informal Observation',
+      showEnvironmentCheckbox: true,
+      showDimensionFocusOptions: true,
+    },
+    sidebar: {
+      title: 'CLASS 2nd Edition - Informal with Environment',
+      skipEnvironment: true,
+    },
+    steps: DEFAULT_STEPS,
+  },
 ]
 
 export const DEFAULT_FLOW_ID = 'informal'

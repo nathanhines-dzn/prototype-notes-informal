@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { useToast } from '../../context/ToastContext'
 import type { ClassDimension, CycleNote } from '../../types'
 import { DimensionSelect } from './DimensionSelect'
+import { DimensionTextareasNotes } from './DimensionTextareasNotes'
 import { GroupedNotesReview } from './GroupedNotesReview'
 import { KanbanNotesBoard } from './kanban/KanbanNotesBoard'
 import { KeyboardShortcutHint } from './KeyboardShortcutHint'
@@ -10,7 +11,7 @@ type NotesSectionProps = {
   cycleNumber: number
   notes: CycleNote[]
   dimensions: ClassDimension[]
-  notesLayout?: 'grouped' | 'kanban'
+  notesLayout?: 'grouped' | 'kanban' | 'dimension-textareas'
   onAddNote: (text: string, dimensionId: string | null) => void
   onUpdateNote: (
     noteId: string,
@@ -45,6 +46,16 @@ export function NotesSection({
       return null
     })
   }, [dimensions])
+
+  if (notesLayout === 'dimension-textareas') {
+    return (
+      <DimensionTextareasNotes
+        notes={notes}
+        dimensions={dimensions}
+        onSyncDimensionNotes={onSyncDimensionNotes}
+      />
+    )
+  }
 
   const canAdd = draftText.trim().length > 0
 
