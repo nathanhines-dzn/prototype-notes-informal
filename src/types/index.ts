@@ -21,7 +21,11 @@ export type FlowDefinition = {
   features?: {
     showIndicatorScoring?: boolean
     structuredNotes?: boolean
-    notesLayout?: 'grouped' | 'kanban' | 'dimension-textareas'
+    notesLayout?:
+      | 'grouped'
+      | 'kanban'
+      | 'dimension-textareas'
+      | 'inline-bullet-rows'
   }
   createForm: {
     title: string

@@ -64,7 +64,11 @@ type PrototypeContextValue = {
   restart: () => void
   setExpandedDimensionId: (dimensionId: string | null) => void
   toggleCycleSection: (sectionId: CycleSectionId) => void
-  addCycleNote: (cycleNumber: number, text: string, dimensionId?: string | null) => void
+  addCycleNote: (
+    cycleNumber: number,
+    text: string,
+    dimensionId?: string | null,
+  ) => string | null
   updateCycleNote: (
     cycleNumber: number,
     noteId: string,
@@ -308,9 +312,9 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
   }, [])
 
   const addCycleNote = useCallback(
-    (cycleNumber: number, text: string, dimensionId: string | null = null) => {
+    (cycleNumber: number, text: string, dimensionId: string | null = null): string | null => {
       const trimmed = text.trim()
-      if (!trimmed) return
+      if (!trimmed) return null
 
       const note: CycleNote = {
         id: crypto.randomUUID(),
@@ -322,6 +326,8 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
         ...current,
         [cycleNumber]: [note, ...(current[cycleNumber] ?? [])],
       }))
+
+      return note.id
     },
     [],
   )

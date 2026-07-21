@@ -1,6 +1,7 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 import { useToast } from '../../context/ToastContext'
 import type { ClassDimension, CycleNote } from '../../types'
+import { BulletRowNotesEditor } from './BulletRowNotesEditor'
 import { DimensionSelect } from './DimensionSelect'
 import { DimensionTextareasNotes } from './DimensionTextareasNotes'
 import { GroupedNotesReview } from './GroupedNotesReview'
@@ -11,8 +12,12 @@ type NotesSectionProps = {
   cycleNumber: number
   notes: CycleNote[]
   dimensions: ClassDimension[]
-  notesLayout?: 'grouped' | 'kanban' | 'dimension-textareas'
-  onAddNote: (text: string, dimensionId: string | null) => void
+  notesLayout?:
+    | 'grouped'
+    | 'kanban'
+    | 'dimension-textareas'
+    | 'inline-bullet-rows'
+  onAddNote: (text: string, dimensionId: string | null) => string | null
   onUpdateNote: (
     noteId: string,
     patch: Partial<Pick<CycleNote, 'text' | 'dimensionId'>>,
@@ -37,15 +42,10 @@ export function NotesSection({
   const composerRef = useRef<HTMLDivElement>(null)
   const textareaRef = useRef<HTMLTextAreaElement>(null)
 
-  useEffect(() => {
-    setSelectedDimensionId((current) => {
-      if (current == null) return null
-      if (dimensions.some((dimension) => dimension.id === current)) {
-        return current
-      }
-      return null
-    })
-  }, [dimensions])
+  const effectiveDimensionId =
+    selectedDimensionId != null && dimensions.some((dimension) => dimension.id === selectedDimensionId)
+      ? selectedDimensionId
+      : null
 
   if (notesLayout === 'dimension-textareas') {
     return (
@@ -57,13 +57,25 @@ export function NotesSection({
     )
   }
 
+  if (notesLayout === 'inline-bullet-rows') {
+    return (
+      <BulletRowNotesEditor
+        notes={notes}
+        dimensions={dimensions}
+        onAddNote={onAddNote}
+        onUpdateNote={onUpdateNote}
+        onDeleteNote={onDeleteNote}
+      />
+    )
+  }
+
   const canAdd = draftText.trim().length > 0
 
   const handleAddNote = () => {
     if (!canAdd) return
 
-    const dimension = dimensions.find((entry) => entry.id === selectedDimensionId)
-    onAddNote(draftText, selectedDimensionId)
+    const dimension = dimensions.find((entry) => entry.id === effectiveDimensionId)
+    onAddNote(draftText, effectiveDimensionId)
     showToast(dimension ? `Note added to ${dimension.name}` : 'Note saved')
     setDraftText('')
     textareaRef.current?.focus()
@@ -98,7 +110,7 @@ export function NotesSection({
             <DimensionSelect
               id={`notes-dimension-${cycleNumber}`}
               dimensions={dimensions}
-              value={selectedDimensionId}
+              value={effectiveDimensionId}
               onChange={setSelectedDimensionId}
             />
           </div>

@@ -81,42 +81,52 @@ export function SettingsModal() {
         role="dialog"
         aria-modal="true"
         aria-labelledby="settings-title"
-        className="w-full max-w-md rounded-xl bg-white p-6 shadow-xl"
+        className="flex max-h-[90vh] w-full max-w-2xl flex-col gap-6 overflow-hidden rounded-xl bg-white p-6 shadow-xl"
       >
-        <h2 id="settings-title" className="text-xl font-semibold text-teachstone-navy">
-          Prototype Settings
-        </h2>
-        <p className="mt-2 text-sm text-gray-500">
-          Switching flow will restart the prototype from the create observation screen.
-        </p>
+        <div className="shrink-0">
+          <h2 id="settings-title" className="text-xl font-semibold text-teachstone-navy">
+            Prototype Settings
+          </h2>
+          <p className="mt-2 text-sm text-gray-500">
+            Switching flow will restart the prototype from the create observation screen.
+          </p>
+        </div>
 
-        <fieldset className="mt-6 space-y-3">
-          <legend className="mb-2 text-sm font-medium text-teachstone-slate">Observation flow</legend>
-          {FLOWS.map((flow) => (
-            <div
-              key={flow.id}
-              className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-3 hover:bg-gray-50"
-            >
-              <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-3">
-                <input
-                  type="radio"
-                  name="flow"
-                  value={flow.id}
-                  checked={activeFlowId === flow.id}
-                  onChange={() => {
-                    setActiveFlow(flow.id)
-                    setSettingsOpen(false)
-                  }}
-                  className="h-4 w-4 shrink-0 accent-teachstone-teal"
-                />
-                <span className="text-base text-teachstone-navy">{flow.label}</span>
-              </label>
-              <CopyLinkButton flowId={flow.id} flowLabel={flow.label} />
-            </div>
-          ))}
-        </fieldset>
+        <div className="flex min-h-0 flex-1 flex-col gap-2 overflow-hidden">
+          <p id="settings-flow-label" className="shrink-0 text-sm font-medium text-teachstone-slate">
+            Observation flow
+          </p>
+          <div
+            role="group"
+            aria-labelledby="settings-flow-label"
+            className="min-h-0 flex-1 space-y-3 overflow-y-auto overscroll-contain rounded-lg border border-gray-200 p-2"
+          >
+            {FLOWS.map((flow) => (
+              <div
+                key={flow.id}
+                className="flex items-center gap-3 rounded-lg border border-gray-200 px-4 py-3 hover:bg-gray-50"
+              >
+                <label className="flex min-w-0 flex-1 cursor-pointer items-center gap-3">
+                  <input
+                    type="radio"
+                    name="flow"
+                    value={flow.id}
+                    checked={activeFlowId === flow.id}
+                    onChange={() => {
+                      setActiveFlow(flow.id)
+                      setSettingsOpen(false)
+                    }}
+                    className="h-4 w-4 shrink-0 accent-teachstone-teal"
+                  />
+                  <span className="text-base text-teachstone-navy">{flow.label}</span>
+                </label>
+                <CopyLinkButton flowId={flow.id} flowLabel={flow.label} />
+              </div>
+            ))}
+          </div>
+        </div>
 
-        <div className="mt-6 flex justify-end">
+        <div className="flex shrink-0 justify-end">
           <button
             type="button"
             onClick={() => setSettingsOpen(false)}
