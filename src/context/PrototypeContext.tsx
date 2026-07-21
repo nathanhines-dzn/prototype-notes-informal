@@ -255,6 +255,7 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
   const goNext = useCallback(() => {
     setStepIndex((current) => Math.min(current + 1, activeFlow.steps.length - 1))
     setExpandedDimensionId(null)
+    setExpandedCycleSection(null)
   }, [activeFlow])
 
   const goToSummary = useCallback(() => {
@@ -262,6 +263,7 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
     if (summaryIndex >= 0) {
       setStepIndex(summaryIndex)
       setExpandedDimensionId(null)
+      setExpandedCycleSection(null)
     }
   }, [activeFlow])
 
@@ -270,12 +272,14 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
     if (completeIndex >= 0) {
       setStepIndex(completeIndex)
       setExpandedDimensionId(null)
+      setExpandedCycleSection(null)
     }
   }, [activeFlow])
 
   const goBack = useCallback(() => {
     setStepIndex((current) => Math.max(current - 1, 0))
     setExpandedDimensionId(null)
+    setExpandedCycleSection(null)
   }, [])
 
   const updateDimensionData = useCallback(

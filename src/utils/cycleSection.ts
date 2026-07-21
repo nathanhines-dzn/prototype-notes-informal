@@ -1,8 +1,6 @@
 import type { CycleSectionId, FlowDefinition } from '../types'
 
-export function getDefaultExpandedCycleSection(flow: FlowDefinition): CycleSectionId | null {
-  if (flow.features?.structuredNotes) {
-    return 'notes'
-  }
-  return 'enter-scoring'
+/** Cycle section accordions start collapsed on all flows. */
+export function getDefaultExpandedCycleSection(_flow: FlowDefinition): CycleSectionId | null {
+  return null
 }

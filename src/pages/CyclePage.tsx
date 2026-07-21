@@ -73,11 +73,7 @@ export function CyclePage() {
       {showStructuredNotes && (
         <CycleSectionAccordion
           title="Notes"
-          subtitle={
-            activeFlow.features?.notesLayout === 'dimension-textareas'
-              ? 'Add notes for each dimension.'
-              : 'Add notes for each dimension observed'
-          }
+          subtitle="Optional - Add notes for each dimension you observe."
           expanded={expandedCycleSection === 'notes'}
           onToggle={() => handleSectionToggle('notes')}
           className="mb-0"
