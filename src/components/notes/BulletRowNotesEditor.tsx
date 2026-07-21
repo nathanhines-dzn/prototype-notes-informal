@@ -383,7 +383,7 @@ export function BulletRowNotesEditor({
         ref={shellRef}
         role="presentation"
         onMouseDown={handleShellMouseDown}
-        onFocusOut={handleShellFocusOut}
+        onBlur={handleShellFocusOut}
         className="min-h-[11.25rem] cursor-text rounded-[11px] border border-gray-300 bg-white px-4 py-3 focus-within:ring-1 focus-within:ring-teachstone-teal"
       >
         <ul className="min-h-[9.75rem] space-y-2.5">
