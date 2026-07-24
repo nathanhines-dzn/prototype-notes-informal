@@ -124,11 +124,11 @@ export function DimensionAccordion({
       </div>
 
       {expanded && (
-        <div className="mx-7 border-t-[3px] border-white pt-3">
-          <div className="space-y-6">
-            {showStructuredNotes ? (
-              <DimensionNotesList notes={dimensionNotes ?? []} />
-            ) : (
+        <div className="mx-7 border-t-[3px] border-white">
+          {showStructuredNotes ? (
+            <DimensionNotesList notes={dimensionNotes ?? []} />
+          ) : (
+            <div className="flex w-full flex-col gap-6 pt-6">
               <div className="space-y-2">
                 <label
                   htmlFor={`notes-${dimension.id}`}
@@ -144,9 +144,11 @@ export function DimensionAccordion({
                   className="min-h-24 w-full resize-y rounded-[11px] border-0 bg-white px-8 py-6 text-base text-gray-400 outline-none focus:text-teachstone-navy"
                 />
               </div>
-            )}
+              <div className="h-[3px] w-full border-t-[3px] border-white" />
+            </div>
+          )}
 
-            <div className="border-t-[3px] border-white pt-6 pb-6">
+          <div className="pt-6 pb-6">
               {showIndicatorScoring && (
                 <div className="space-y-2">
                   {dimension.indicators.map((indicator) => (
@@ -203,7 +205,6 @@ export function DimensionAccordion({
                   }
                 />
               </div>
-            </div>
           </div>
         </div>
       )}
