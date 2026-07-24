@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { AccordionStatusBar } from './AccordionStatusBar'
 import { DimensionNotesList } from './notes/DimensionNotesList'
 import { RangeInput } from './RangeInput'
@@ -8,10 +9,15 @@ import type {
   DimensionCycleData,
   FlowDefinition,
   RangeValue,
+  ScoreValue,
 } from '../types'
-import { getDimensionRecommendation } from '../utils/scoreRecommendation'
+import {
+  areAllIndicatorsComplete,
+  getDimensionRecommendation,
+} from '../utils/scoreRecommendation'
 
 const DEFAULT_INDICATOR_LEVELS: RangeValue[] = ['low', 'mid', 'high']
+const INCOMPLETE_INDICATORS_ERROR = 'Complete indicator range selections.'
 
 function getIndicatorValue(
   indicatorLevels: RangeValue[] | undefined,
@@ -43,6 +49,7 @@ export function DimensionAccordion({
   onToggleExpand,
   onChange,
 }: DimensionAccordionProps) {
+  const [showIncompleteIndicatorsError, setShowIncompleteIndicatorsError] = useState(false)
   const showStructuredNotes = flow.features?.structuredNotes === true
   const showIndicatorScoring = flow.features?.showIndicatorScoring !== false
   const recommendation = getDimensionRecommendation(
@@ -51,6 +58,41 @@ export function DimensionAccordion({
     flow.scoring.type,
   )
   const showRecommendationHighlights = recommendation.active && data.overallValue == null
+
+  const handleIndicatorChange = (indicatorId: string, value: RangeValue | null) => {
+    const nextIndicatorValues = {
+      ...data.indicatorValues,
+      [indicatorId]: value,
+    }
+    const indicatorsComplete = areAllIndicatorsComplete(
+      dimension.indicators,
+      nextIndicatorValues,
+    )
+
+    if (indicatorsComplete) {
+      setShowIncompleteIndicatorsError(false)
+    }
+
+    onChange({
+      ...data,
+      indicatorValues: nextIndicatorValues,
+      overallValue:
+        !indicatorsComplete && data.overallValue != null ? null : data.overallValue,
+    })
+  }
+
+  const handleOverallChange = (value: ScoreValue | null) => {
+    if (
+      showIndicatorScoring &&
+      !areAllIndicatorsComplete(dimension.indicators, data.indicatorValues)
+    ) {
+      setShowIncompleteIndicatorsError(true)
+      return
+    }
+
+    setShowIncompleteIndicatorsError(false)
+    onChange({ ...data, overallValue: value })
+  }
 
   return (
     <div
@@ -119,18 +161,21 @@ export function DimensionAccordion({
                           data.indicatorValues[indicator.id],
                         )}
                         options={indicator.levels}
-                        onChange={(value) =>
-                          onChange({
-                            ...data,
-                            indicatorValues: {
-                              ...data.indicatorValues,
-                              [indicator.id]: value,
-                            },
-                          })
-                        }
+                        onChange={(value) => handleIndicatorChange(indicator.id, value)}
                       />
                     </div>
                   ))}
+                </div>
+              )}
+
+              {showIndicatorScoring && showIncompleteIndicatorsError && (
+                <div className="mt-2 flex justify-end pr-[100px]">
+                  <p
+                    role="alert"
+                    className="w-[270px] text-base text-teachstone-error"
+                  >
+                    {INCOMPLETE_INDICATORS_ERROR}
+                  </p>
                 </div>
               )}
 
@@ -145,7 +190,7 @@ export function DimensionAccordion({
                 <ScoringInput
                   scoringType={flow.scoring.type}
                   value={data.overallValue}
-                  onChange={(value) => onChange({ ...data, overallValue: value })}
+                  onChange={handleOverallChange}
                   highlightedScores={
                     showRecommendationHighlights && 'formalScores' in recommendation
                       ? recommendation.formalScores
