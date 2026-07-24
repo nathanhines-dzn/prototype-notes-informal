@@ -1,4 +1,4 @@
-import { DEFAULT_FLOW_ID, isValidFlowId } from '../config/flows'
+import { DEFAULT_FLOW_ID, resolveFlowId } from '../config/flows'
 
 export const FLOW_URL_PARAM = 'flow'
 export const FLOW_STORAGE_KEY = 'class-notes-prototype-flow-id'
@@ -6,15 +6,21 @@ export const FLOW_STORAGE_KEY = 'class-notes-prototype-flow-id'
 export function getFlowIdFromUrl(search = window.location.search): string | null {
   const params = new URLSearchParams(search)
   const flowId = params.get(FLOW_URL_PARAM)
-  return flowId && isValidFlowId(flowId) ? flowId : null
+  return flowId ? resolveFlowId(flowId) : null
 }
 
 function readStoredFlowId(): string | null {
   try {
     const stored = localStorage.getItem(FLOW_STORAGE_KEY)
-    if (stored && isValidFlowId(stored)) {
-      return stored
+    if (!stored) {
+      return null
     }
+
+    const resolved = resolveFlowId(stored)
+    if (resolved && resolved !== stored) {
+      localStorage.setItem(FLOW_STORAGE_KEY, resolved)
+    }
+    return resolved
   } catch {
     // ignore storage errors in prototype
   }
@@ -47,15 +53,24 @@ export function setFlowInUrl(flowId: string): void {
   window.history.replaceState(null, '', url)
 }
 
+/** Strip unknown `flow` params; rewrite legacy aliases to their canonical ids. */
 export function stripInvalidFlowParam(): void {
   const params = new URLSearchParams(window.location.search)
   const rawFlow = params.get(FLOW_URL_PARAM)
-  if (!rawFlow || isValidFlowId(rawFlow)) {
+  if (!rawFlow) {
     return
   }
 
-  params.delete(FLOW_URL_PARAM)
-  const url = new URL(window.location.href)
-  url.search = params.toString()
-  window.history.replaceState(null, '', url)
+  const resolved = resolveFlowId(rawFlow)
+  if (!resolved) {
+    params.delete(FLOW_URL_PARAM)
+    const url = new URL(window.location.href)
+    url.search = params.toString()
+    window.history.replaceState(null, '', url)
+    return
+  }
+
+  if (resolved !== rawFlow) {
+    setFlowInUrl(resolved)
+  }
 }

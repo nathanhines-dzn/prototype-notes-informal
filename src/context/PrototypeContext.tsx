@@ -156,13 +156,13 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       setExpandedCycleSection(getDefaultExpandedCycleSection(flow))
       setIncludeAllDimensionsState(true)
       setFocusedDimensionIdsState([])
-      setActiveFlowIdState(flowId)
+      setActiveFlowIdState(flow.id)
       try {
-        localStorage.setItem(FLOW_STORAGE_KEY, flowId)
+        localStorage.setItem(FLOW_STORAGE_KEY, flow.id)
       } catch {
         // ignore storage errors in prototype
       }
-      setFlowInUrl(flowId)
+      setFlowInUrl(flow.id)
     },
     [],
   )

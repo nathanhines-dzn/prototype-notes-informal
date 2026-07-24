@@ -29,6 +29,7 @@ function DimensionPill({
 
 export function InformalObservationOptions() {
   const {
+    activeFlow,
     includeAllDimensions,
     focusedDimensionIds,
     setAllDimensionsRowChecked,
@@ -37,6 +38,10 @@ export function InformalObservationOptions() {
   } = usePrototype()
   const [open, setOpen] = useState(false)
   const containerRef = useRef<HTMLDivElement>(null)
+  const optionsHeading =
+    activeFlow.scoring.type === 'numeric'
+      ? 'Observation Options'
+      : 'Informal Observation Options'
 
   const selectedDimensions = CLASS_DIMENSIONS.filter((dimension) =>
     includeAllDimensions ? true : focusedDimensionIds.includes(dimension.id),
@@ -72,7 +77,7 @@ export function InformalObservationOptions() {
 
   return (
     <section className="mt-8 border-t border-gray-100 pt-5">
-      <h2 className="mb-3 text-xl font-semibold text-teachstone-slate">Informal Observation Options</h2>
+      <h2 className="mb-3 text-xl font-semibold text-teachstone-slate">{optionsHeading}</h2>
 
       <div className="w-full max-w-md py-2">
         <label className="mb-1 block text-base text-teachstone-slate">
