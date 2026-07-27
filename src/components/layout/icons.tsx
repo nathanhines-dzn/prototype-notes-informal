@@ -103,6 +103,26 @@ export function Trash({ className, 'aria-label': ariaLabel }: IconProps) {
   )
 }
 
+/** Six-dot grip used as a drag-handle affordance on reorderable / kanban cards. */
+export function GripVertical({ className, 'aria-label': ariaLabel }: IconProps) {
+  return (
+    <svg
+      viewBox="0 0 16 16"
+      fill="currentColor"
+      className={className}
+      aria-label={ariaLabel}
+      aria-hidden={!ariaLabel}
+    >
+      <circle cx="5.5" cy="3.5" r="1.25" />
+      <circle cx="10.5" cy="3.5" r="1.25" />
+      <circle cx="5.5" cy="8" r="1.25" />
+      <circle cx="10.5" cy="8" r="1.25" />
+      <circle cx="5.5" cy="12.5" r="1.25" />
+      <circle cx="10.5" cy="12.5" r="1.25" />
+    </svg>
+  )
+}
+
 export function InfoIcon({ className, 'aria-label': ariaLabel }: IconProps) {
   return (
     <svg

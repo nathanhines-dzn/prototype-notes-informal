@@ -2,7 +2,7 @@ import { useDraggable } from '@dnd-kit/core'
 import { CSS } from '@dnd-kit/utilities'
 import { useEffect, useRef, useState } from 'react'
 import type { CycleNote } from '../../../types'
-import { Trash } from '../../layout/icons'
+import { GripVertical, Trash } from '../../layout/icons'
 
 type KanbanNoteCardProps = {
   note: CycleNote
@@ -27,9 +27,10 @@ export function KanbanNoteCard({ note, onUpdate, onDelete }: KanbanNoteCardProps
     }
   }, [isEditing])
 
-  const style = transform
-    ? { transform: CSS.Translate.toString(transform) }
-    : undefined
+  const style = {
+    transform: transform ? CSS.Translate.toString(transform) : undefined,
+    willChange: isDragging ? ('transform' as const) : undefined,
+  }
 
   const handleBlur = () => {
     if (editingText == null) return
@@ -55,12 +56,25 @@ export function KanbanNoteCard({ note, onUpdate, onDelete }: KanbanNoteCardProps
     <article
       ref={setNodeRef}
       style={style}
-      className={`group rounded-lg border border-gray-200 bg-white shadow-sm transition ${
-        isDragging ? 'opacity-50' : 'hover:border-gray-300 hover:shadow'
+      className={`group rounded-lg border border-gray-200 bg-white shadow-sm ${
+        isDragging
+          ? 'z-20 opacity-50 shadow-md'
+          : 'transition-[border-color,box-shadow,opacity] hover:border-gray-300 hover:shadow'
       }`}
-      {...(isEditing ? {} : { ...listeners, ...attributes })}
     >
-      <div className="flex items-start justify-between gap-2 p-3">
+      <div className="flex items-start gap-1.5 p-3">
+        {!isEditing && (
+          <button
+            type="button"
+            aria-label="Drag note to another column"
+            className="mt-0.5 flex size-7 shrink-0 cursor-grab items-center justify-center rounded-md text-teachstone-muted transition hover:bg-gray-100 hover:text-teachstone-navy active:cursor-grabbing focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teachstone-teal"
+            {...listeners}
+            {...attributes}
+          >
+            <GripVertical className="size-3.5" />
+          </button>
+        )}
+
         {isEditing ? (
           <textarea
             ref={textareaRef}
@@ -80,6 +94,7 @@ export function KanbanNoteCard({ note, onUpdate, onDelete }: KanbanNoteCardProps
             {note.text}
           </button>
         )}
+
         <button
           type="button"
           onClick={onDelete}

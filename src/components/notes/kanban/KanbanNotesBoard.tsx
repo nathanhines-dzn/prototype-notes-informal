@@ -24,6 +24,7 @@ type KanbanNotesBoardProps = {
     patch: Partial<Pick<CycleNote, 'text' | 'dimensionId'>>,
   ) => void
   onDeleteNote: (noteId: string) => void
+  onComposeForDimension: (dimensionId: string | null) => void
 }
 
 export function KanbanNotesBoard({
@@ -31,11 +32,13 @@ export function KanbanNotesBoard({
   dimensions,
   onUpdateNote,
   onDeleteNote,
+  onComposeForDimension,
 }: KanbanNotesBoardProps) {
   const { showToast } = useToast()
   const sensors = useSensors(
     useSensor(PointerSensor, {
-      activationConstraint: { distance: 8 },
+      // Small threshold so clicks still edit/delete, but grab feels immediate.
+      activationConstraint: { distance: 3 },
     }),
   )
 
@@ -92,6 +95,11 @@ export function KanbanNotesBoard({
                 notes={getNotesForKanbanColumn(column.columnId, notes, dimensions)}
                 onUpdateNote={onUpdateNote}
                 onDeleteNote={onDeleteNote}
+                onCompose={() =>
+                  onComposeForDimension(
+                    column.columnId === UNASSIGNED_COLUMN_ID ? null : column.columnId,
+                  )
+                }
               />
             ))}
           </div>

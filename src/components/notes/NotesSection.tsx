@@ -91,6 +91,18 @@ export function NotesSection({
     }
   }
 
+  const handleComposeForDimension = (dimensionId: string | null) => {
+    setSelectedDimensionId(dimensionId)
+    composerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
+    requestAnimationFrame(() => {
+      const textarea = textareaRef.current
+      if (!textarea) return
+      textarea.focus()
+      const end = textarea.value.length
+      textarea.setSelectionRange(end, end)
+    })
+  }
+
   return (
     <div className="h-fit space-y-4">
       <div ref={composerRef} className="mb-5 space-y-3 rounded-[11px] border border-gray-200 bg-[#f4f8fa] px-6 py-5">
@@ -143,7 +155,7 @@ export function NotesSection({
               type="button"
               onClick={handleAddNote}
               disabled={!canAdd}
-              className="rounded-lg bg-teachstone-teal px-6 py-2 text-base text-white hover:bg-[#016688] disabled:cursor-not-allowed disabled:opacity-50"
+              className="cursor-pointer rounded-lg bg-teachstone-teal px-6 py-2 text-base text-white hover:bg-[#016688] disabled:cursor-not-allowed disabled:opacity-50"
             >
               Add note
             </button>
@@ -157,6 +169,7 @@ export function NotesSection({
           dimensions={dimensions}
           onUpdateNote={onUpdateNote}
           onDeleteNote={onDeleteNote}
+          onComposeForDimension={handleComposeForDimension}
         />
       ) : (
         <GroupedNotesReview

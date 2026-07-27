@@ -11,6 +11,7 @@ type KanbanColumnProps = {
     patch: Partial<Pick<CycleNote, 'text' | 'dimensionId'>>,
   ) => void
   onDeleteNote: (noteId: string) => void
+  onCompose: () => void
 }
 
 export function KanbanColumn({
@@ -19,13 +20,14 @@ export function KanbanColumn({
   notes,
   onUpdateNote,
   onDeleteNote,
+  onCompose,
 }: KanbanColumnProps) {
   const { setNodeRef, isOver } = useDroppable({ id: columnId })
 
   return (
     <section
       ref={setNodeRef}
-      className={`flex min-h-48 w-[260px] shrink-0 flex-col rounded-xl border bg-[#f8f9fa] transition ${
+      className={`flex min-h-48 w-[260px] shrink-0 flex-col rounded-xl border bg-[#f4f8fa] transition ${
         isOver ? 'border-teachstone-teal bg-teal-50/50' : 'border-gray-200'
       }`}
     >
@@ -45,7 +47,7 @@ export function KanbanColumn({
 
       <div className="flex flex-1 flex-col gap-2 p-3">
         {notes.length === 0 ? (
-          <p className="py-6 text-center text-xs text-teachstone-muted">No notes</p>
+          <p className="py-4 text-center text-xs text-teachstone-muted">No notes</p>
         ) : (
           notes.map((note) => (
             <KanbanNoteCard
@@ -56,6 +58,13 @@ export function KanbanColumn({
             />
           ))
         )}
+        <button
+          type="button"
+          onClick={onCompose}
+          className="mt-auto w-full cursor-pointer rounded-lg border border-gray-300 px-3 py-2 text-sm font-medium text-teachstone-navy transition hover:border-gray-400 hover:bg-white/60 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teachstone-teal"
+        >
+          Add note
+        </button>
       </div>
     </section>
   )
