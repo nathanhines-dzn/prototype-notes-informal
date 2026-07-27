@@ -18,6 +18,7 @@ export function CyclePage() {
     toggleCycleSection,
     updateDimensionData,
     addCycleNote,
+    insertCycleNoteAfter,
     updateCycleNote,
     deleteCycleNote,
     syncDimensionNotes,
@@ -84,6 +85,9 @@ export function CyclePage() {
             dimensions={activeDimensions}
             notesLayout={activeFlow.features?.notesLayout ?? 'grouped'}
             onAddNote={(text, dimensionId) => addCycleNote(cycleNumber, text, dimensionId)}
+            onInsertNoteAfter={(afterNoteId, text) =>
+              insertCycleNoteAfter(cycleNumber, afterNoteId, text)
+            }
             onUpdateNote={(noteId, patch) => updateCycleNote(cycleNumber, noteId, patch)}
             onDeleteNote={(noteId) => deleteCycleNote(cycleNumber, noteId)}
             onSyncDimensionNotes={(dimensionId, parsedTexts) =>

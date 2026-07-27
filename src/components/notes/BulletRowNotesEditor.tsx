@@ -16,6 +16,7 @@ type BulletRowNotesEditorProps = {
   notes: CycleNote[]
   dimensions: ClassDimension[]
   onAddNote: (text: string, dimensionId: string | null) => string | null
+  onInsertNoteAfter: (afterNoteId: string, text: string) => string | null
   onUpdateNote: (
     noteId: string,
     patch: Partial<Pick<CycleNote, 'text' | 'dimensionId'>>,
@@ -96,6 +97,7 @@ export function BulletRowNotesEditor({
   notes,
   dimensions,
   onAddNote,
+  onInsertNoteAfter,
   onUpdateNote,
   onDeleteNote,
 }: BulletRowNotesEditorProps) {
@@ -105,12 +107,14 @@ export function BulletRowNotesEditor({
   const inputRefs = useRef<Map<string, HTMLTextAreaElement>>(new Map())
   const shellRef = useRef<HTMLDivElement>(null)
   const draftTextRef = useRef(draftText)
+  const dirtyTextsRef = useRef(dirtyTexts)
   const onAddNoteRef = useRef(onAddNote)
   const pendingFocusRef = useRef<{ key: string; caret?: number } | null>({
     key: DRAFT_KEY,
   })
 
   draftTextRef.current = draftText
+  dirtyTextsRef.current = dirtyTexts
   onAddNoteRef.current = onAddNote
 
   const getNoteText = (note: CycleNote) => dirtyTexts[note.id] ?? note.text
@@ -134,6 +138,38 @@ export function BulletRowNotesEditor({
     }
   }, [])
 
+  const applyPendingFocus = (key?: string) => {
+    const pending = pendingFocusRef.current
+    if (!pending) return false
+    if (key != null && pending.key !== key) return false
+
+    const element = inputRefs.current.get(pending.key) ?? null
+    if (!element) return false
+
+    const tagWidth =
+      pending.key === DRAFT_KEY
+        ? 0
+        : (element.parentElement?.querySelector('[data-note-tag]')?.getBoundingClientRect()
+            .width ?? 96)
+    syncTextareaLayout(element, { tagWidth })
+    placeCaretAtEnd(element, pending.caret)
+    return document.activeElement === element
+  }
+
+  const clearPendingFocusSoon = (key: string) => {
+    // Double rAF: wait past layout + Strict Mode remount, then drop pending so it
+    // can't steal focus on later dirtyTexts updates.
+    requestAnimationFrame(() => {
+      applyPendingFocus(key)
+      requestAnimationFrame(() => {
+        applyPendingFocus(key)
+        if (pendingFocusRef.current?.key === key) {
+          pendingFocusRef.current = null
+        }
+      })
+    })
+  }
+
   useLayoutEffect(() => {
     for (const [key, element] of inputRefs.current.entries()) {
       const tagWidth =
@@ -146,6 +182,11 @@ export function BulletRowNotesEditor({
         minWidth: 48,
       })
     }
+
+    const pending = pendingFocusRef.current
+    if (!pending) return
+    applyPendingFocus()
+    clearPendingFocusSoon(pending.key)
   }, [displayNotes, draftText, dirtyTexts, dimensions])
 
   const setInputRef = (key: string, element: HTMLTextAreaElement | null) => {
@@ -160,6 +201,8 @@ export function BulletRowNotesEditor({
         tagWidth,
         minWidth: 48,
       })
+      // Claim focus as soon as the target row mounts (covers Strict Mode remounts).
+      applyPendingFocus(key)
     } else {
       inputRefs.current.delete(key)
     }
@@ -167,21 +210,8 @@ export function BulletRowNotesEditor({
 
   const focusRow = (key: string, caret?: number) => {
     pendingFocusRef.current = { key, caret }
-    requestAnimationFrame(() => {
-      const pending = pendingFocusRef.current
-      if (!pending) return
-      pendingFocusRef.current = null
-      const element = inputRefs.current.get(pending.key) ?? null
-      if (element) {
-        const tagWidth =
-          pending.key === DRAFT_KEY
-            ? 0
-            : (element.parentElement?.querySelector('[data-note-tag]')?.getBoundingClientRect()
-                .width ?? 96)
-        syncTextareaLayout(element, { tagWidth })
-      }
-      placeCaretAtEnd(element, pending.caret)
-    })
+    applyPendingFocus(key)
+    clearPendingFocusSoon(key)
   }
 
   const resizeFromEvent = (element: HTMLTextAreaElement, key: string) => {
@@ -249,10 +279,13 @@ export function BulletRowNotesEditor({
       }
 
       const remainder = after.trimStart()
-      if (remainder) {
-        setDraftText((current) => (current ? `${remainder} ${current}` : remainder))
+      const newId = onInsertNoteAfter(note.id, remainder)
+      if (newId) {
+        // Always seed dirty text (including "") so the new row has stable controlled state
+        // before focus lands — avoids a blur/delete race on the second Enter.
+        setDirtyTexts((current) => ({ ...current, [newId]: remainder }))
+        focusRow(newId, 0)
       }
-      focusRow(DRAFT_KEY)
       return
     }
 
@@ -324,13 +357,22 @@ export function BulletRowNotesEditor({
     setDirtyTexts((current) => ({ ...current, [noteId]: firstCombined }))
     onUpdateNote(noteId, { text: firstCombined.trim() || firstCombined })
 
-    for (const line of rest) {
-      onAddNote(line, null)
-    }
+    let afterId = noteId
+    const linesToInsert = [...rest]
     if (after.trim()) {
-      onAddNote(after.trim(), null)
+      linesToInsert.push(after.trim())
     }
-    focusRow(DRAFT_KEY)
+
+    let focusId = noteId
+    for (const line of linesToInsert) {
+      const newId = onInsertNoteAfter(afterId, line)
+      if (!newId) continue
+      afterId = newId
+      focusId = newId
+      setDirtyTexts((current) => ({ ...current, [newId]: line }))
+    }
+
+    focusRow(focusId, focusId === noteId ? firstCombined.length : 0)
   }
 
   const handleShellMouseDown = (event: MouseEvent<HTMLDivElement>) => {
@@ -407,15 +449,33 @@ export function BulletRowNotesEditor({
                     resizeFromEvent(event.target, note.id)
                   }}
                   onBlur={() => {
-                    const next = getNoteText(note).trim()
-                    if (next !== note.text) {
-                      onUpdateNote(note.id, { text: next })
-                    }
-                    setDirtyTexts((current) => {
-                      if (!(note.id in current)) return current
-                      const nextDirty = { ...current }
-                      delete nextDirty[note.id]
-                      return nextDirty
+                    const noteId = note.id
+                    const committedText = note.text
+                    // Defer so Enter's focus handoff can finish before we commit/delete.
+                    requestAnimationFrame(() => {
+                      if (pendingFocusRef.current) return
+                      if (document.activeElement === inputRefs.current.get(noteId)) return
+
+                      const next = (dirtyTextsRef.current[noteId] ?? committedText).trim()
+                      if (!next) {
+                        setDirtyTexts((current) => {
+                          if (!(noteId in current)) return current
+                          const nextDirty = { ...current }
+                          delete nextDirty[noteId]
+                          return nextDirty
+                        })
+                        onDeleteNote(noteId)
+                        return
+                      }
+                      if (next !== committedText) {
+                        onUpdateNote(noteId, { text: next })
+                      }
+                      setDirtyTexts((current) => {
+                        if (!(noteId in current)) return current
+                        const nextDirty = { ...current }
+                        delete nextDirty[noteId]
+                        return nextDirty
+                      })
                     })
                   }}
                   onKeyDown={(event) => handleNoteKeyDown(event, note, index)}

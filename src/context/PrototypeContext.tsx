@@ -4,6 +4,7 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from 'react'
@@ -69,6 +70,11 @@ type PrototypeContextValue = {
     text: string,
     dimensionId?: string | null,
   ) => string | null
+  insertCycleNoteAfter: (
+    cycleNumber: number,
+    afterNoteId: string,
+    text: string,
+  ) => string | null
   updateCycleNote: (
     cycleNumber: number,
     noteId: string,
@@ -104,6 +110,8 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
   const [cycleNotes, setCycleNotes] = useState<CycleNotesData>(() =>
     createEmptyCycleNotes(DEFAULT_META.numberOfCycles),
   )
+  const cycleNotesRef = useRef(cycleNotes)
+  cycleNotesRef.current = cycleNotes
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [expandedDimensionId, setExpandedDimensionId] = useState<string | null>(null)
   const [expandedCycleSection, setExpandedCycleSection] = useState<CycleSectionId | null>(() =>
@@ -332,6 +340,40 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
     [],
   )
 
+  /** Insert after `afterNoteId` in display order (oldest-first). Allows empty text. */
+  const insertCycleNoteAfter = useCallback(
+    (cycleNumber: number, afterNoteId: string, text: string): string | null => {
+      // Id must be created synchronously — setState updaters may run after this returns,
+      // and focus needs the id immediately.
+      const notes = cycleNotesRef.current[cycleNumber] ?? []
+      const index = notes.findIndex((note) => note.id === afterNoteId)
+      if (index < 0) return null
+
+      const insertedId = crypto.randomUUID()
+      const dimensionId = notes[index]!.dimensionId
+
+      setCycleNotes((current) => {
+        const currentNotes = current[cycleNumber] ?? []
+        const currentIndex = currentNotes.findIndex((note) => note.id === afterNoteId)
+        if (currentIndex < 0) return current
+
+        const next = [...currentNotes]
+        next.splice(currentIndex, 0, {
+          id: insertedId,
+          text,
+          dimensionId: currentNotes[currentIndex]!.dimensionId ?? dimensionId,
+        })
+        return {
+          ...current,
+          [cycleNumber]: next,
+        }
+      })
+
+      return insertedId
+    },
+    [],
+  )
+
   const updateCycleNote = useCallback(
     (
       cycleNumber: number,
@@ -421,6 +463,7 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       setExpandedDimensionId,
       toggleCycleSection,
       addCycleNote,
+      insertCycleNoteAfter,
       updateCycleNote,
       deleteCycleNote,
       syncDimensionNotes,
@@ -453,6 +496,7 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       restart,
       toggleCycleSection,
       addCycleNote,
+      insertCycleNoteAfter,
       updateCycleNote,
       deleteCycleNote,
       syncDimensionNotes,

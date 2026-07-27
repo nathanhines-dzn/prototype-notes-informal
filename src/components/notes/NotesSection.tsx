@@ -18,6 +18,7 @@ type NotesSectionProps = {
     | 'dimension-textareas'
     | 'inline-bullet-rows'
   onAddNote: (text: string, dimensionId: string | null) => string | null
+  onInsertNoteAfter: (afterNoteId: string, text: string) => string | null
   onUpdateNote: (
     noteId: string,
     patch: Partial<Pick<CycleNote, 'text' | 'dimensionId'>>,
@@ -31,6 +32,7 @@ export function NotesSection({
   notes,
   dimensions,
   onAddNote,
+  onInsertNoteAfter,
   onUpdateNote,
   onDeleteNote,
   onSyncDimensionNotes,
@@ -63,6 +65,7 @@ export function NotesSection({
         notes={notes}
         dimensions={dimensions}
         onAddNote={onAddNote}
+        onInsertNoteAfter={onInsertNoteAfter}
         onUpdateNote={onUpdateNote}
         onDeleteNote={onDeleteNote}
       />
