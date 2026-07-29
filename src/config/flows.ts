@@ -116,7 +116,7 @@ export const FLOWS: FlowDefinition[] = [
     createForm: {
       title: 'Create CLASS 2nd Edition Observation',
       showEnvironmentCheckbox: true,
-      showDimensionFocusOptions: true,
+      showDimensionFocusOptions: false,
     },
     sidebar: {
       title: 'CLASS 2nd Edition with Environment',
@@ -141,7 +141,7 @@ export const FLOWS: FlowDefinition[] = [
     createForm: {
       title: 'Create CLASS 2nd Edition Observation',
       showEnvironmentCheckbox: true,
-      showDimensionFocusOptions: true,
+      showDimensionFocusOptions: false,
     },
     sidebar: {
       title: 'CLASS 2nd Edition with Environment',
@@ -166,7 +166,7 @@ export const FLOWS: FlowDefinition[] = [
     createForm: {
       title: 'Create CLASS 2nd Edition Observation',
       showEnvironmentCheckbox: true,
-      showDimensionFocusOptions: true,
+      showDimensionFocusOptions: false,
     },
     sidebar: {
       title: 'CLASS 2nd Edition with Environment',
