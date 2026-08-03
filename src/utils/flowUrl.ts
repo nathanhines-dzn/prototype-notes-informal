@@ -2,11 +2,18 @@ import { DEFAULT_FLOW_ID, resolveFlowId } from '../config/flows'
 
 export const FLOW_URL_PARAM = 'flow'
 export const FLOW_STORAGE_KEY = 'class-notes-prototype-flow-id'
+export const SETTINGS_URL_PARAM = 'showSettings'
 
 export function getFlowIdFromUrl(search = window.location.search): string | null {
   const params = new URLSearchParams(search)
   const flowId = params.get(FLOW_URL_PARAM)
   return flowId ? resolveFlowId(flowId) : null
+}
+
+/** Keeps the flow-switcher settings button hidden from shared links unless explicitly unlocked. */
+export function isSettingsUnlocked(search = window.location.search): boolean {
+  const params = new URLSearchParams(search)
+  return params.get(SETTINGS_URL_PARAM) === 'true'
 }
 
 function readStoredFlowId(): string | null {

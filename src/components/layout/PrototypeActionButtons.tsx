@@ -2,6 +2,7 @@ import type { ReactNode } from 'react'
 import settingsIcon from '../../assets/icon-settings-sliders.svg'
 import restartIcon from '../../assets/icon-restart.svg'
 import { usePrototype } from '../../context/PrototypeContext'
+import { isSettingsUnlocked } from '../../utils/flowUrl'
 
 type ActionButtonProps = {
   label: string
@@ -36,12 +37,15 @@ function ActionButton({ label, onClick, children }: ActionButtonProps) {
 
 export function PrototypeActionButtons() {
   const { setSettingsOpen, restart } = usePrototype()
+  const settingsUnlocked = isSettingsUnlocked()
 
   return (
     <div className="flex items-center gap-3.5">
-      <ActionButton label="Prototype settings" onClick={() => setSettingsOpen(true)}>
-        <img src={settingsIcon} alt="" className="size-4" />
-      </ActionButton>
+      {settingsUnlocked && (
+        <ActionButton label="Prototype settings" onClick={() => setSettingsOpen(true)}>
+          <img src={settingsIcon} alt="" className="size-4" />
+        </ActionButton>
+      )}
 
       <ActionButton label="Restart prototype" onClick={restart}>
         <img src={restartIcon} alt="" className="size-4" />
