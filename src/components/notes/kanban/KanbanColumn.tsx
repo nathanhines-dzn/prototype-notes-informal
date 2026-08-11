@@ -39,8 +39,8 @@ export function KanbanColumn({
           >
             {title}
           </h3>
-          <span className="shrink-0 rounded-full bg-white px-2 py-0.5 text-xs text-teachstone-muted">
-            {notes.length}
+          <span className="shrink-0 rounded-full bg-teachstone-teal px-2.5 py-0.5 text-xs font-semibold text-white">
+            {notes.length === 1 ? '1 note' : `${notes.length} notes`}
           </span>
         </div>
       </header>
