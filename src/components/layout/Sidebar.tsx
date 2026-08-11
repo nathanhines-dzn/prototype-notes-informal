@@ -10,7 +10,6 @@ import {
 } from './icons'
 
 const SIDEBAR_NOTICE_ID = 'sidebar-prototype-notice'
-const SIDEBAR_COLLAPSED_KEY = 'class-notes-prototype-sidebar-collapsed'
 const PREVIEW_TOOLTIP = 'Preview only — use Next to continue.'
 
 type SidebarItemKind = 'completed-check' | 'cycle' | 'evidence' | 'summary'
@@ -21,22 +20,6 @@ type SidebarItem = {
   status: 'completed' | 'active' | 'upcoming' | 'locked'
   kind: SidebarItemKind
   cycleNumber?: number
-}
-
-function readCollapsedPreference(): boolean {
-  try {
-    return localStorage.getItem(SIDEBAR_COLLAPSED_KEY) === 'true'
-  } catch {
-    return false
-  }
-}
-
-function writeCollapsedPreference(collapsed: boolean) {
-  try {
-    localStorage.setItem(SIDEBAR_COLLAPSED_KEY, String(collapsed))
-  } catch {
-    // ignore storage errors in prototype
-  }
 }
 
 function CompletedCheckBadge({ size = 'sm' }: { size?: 'sm' | 'md' }) {
@@ -132,15 +115,7 @@ export function Sidebar() {
   const isComplete = currentStep.type === 'complete'
   const isSummary = currentStep.type === 'summary'
   const isPostCycle = isSummary || isComplete
-  const [collapsed, setCollapsed] = useState(readCollapsedPreference)
-
-  function toggleCollapsed() {
-    setCollapsed((prev) => {
-      const next = !prev
-      writeCollapsedPreference(next)
-      return next
-    })
-  }
+  const [collapsed, setCollapsed] = useState(false)
 
   const items: SidebarItem[] = [
     {
@@ -202,7 +177,7 @@ export function Sidebar() {
           )}
           <button
             type="button"
-            onClick={toggleCollapsed}
+            onClick={() => setCollapsed((prev) => !prev)}
             aria-expanded={!collapsed}
             aria-controls="observation-sidebar-nav"
             aria-label={collapsed ? 'Expand sidebar' : 'Collapse sidebar'}
