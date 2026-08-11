@@ -81,6 +81,7 @@ export function NotesSection({
     onAddNote(draftText, effectiveDimensionId)
     showToast(dimension ? `Note added to ${dimension.name}` : 'Note saved')
     setDraftText('')
+    setSelectedDimensionId(null)
     textareaRef.current?.focus()
   }
 

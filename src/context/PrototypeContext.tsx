@@ -340,7 +340,8 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
     [],
   )
 
-  /** Insert after `afterNoteId` in display order (oldest-first). Allows empty text. */
+  /** Insert after `afterNoteId` in display order (oldest-first). Allows empty text.
+   *  New notes always start unassigned — Enter/paste must not inherit the previous tag. */
   const insertCycleNoteAfter = useCallback(
     (cycleNumber: number, afterNoteId: string, text: string): string | null => {
       // Id must be created synchronously — setState updaters may run after this returns,
@@ -350,7 +351,6 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
       if (index < 0) return null
 
       const insertedId = crypto.randomUUID()
-      const dimensionId = notes[index]!.dimensionId
 
       setCycleNotes((current) => {
         const currentNotes = current[cycleNumber] ?? []
@@ -361,7 +361,7 @@ export function PrototypeProvider({ children }: { children: ReactNode }) {
         next.splice(currentIndex, 0, {
           id: insertedId,
           text,
-          dimensionId: currentNotes[currentIndex]!.dimensionId ?? dimensionId,
+          dimensionId: null,
         })
         return {
           ...current,

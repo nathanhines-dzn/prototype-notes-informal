@@ -56,23 +56,25 @@ export function KanbanNoteCard({ note, onUpdate, onDelete }: KanbanNoteCardProps
     <article
       ref={setNodeRef}
       style={style}
+      aria-label={isEditing ? undefined : 'Drag note to another column'}
       className={`group rounded-lg border border-gray-200 bg-white shadow-sm ${
         isDragging
-          ? 'z-20 opacity-50 shadow-md'
-          : 'transition-[border-color,box-shadow,opacity] hover:border-gray-300 hover:shadow'
+          ? 'z-20 cursor-grabbing opacity-50 shadow-md'
+          : isEditing
+            ? ''
+            : 'cursor-grab transition-[border-color,box-shadow,opacity] hover:border-gray-300 hover:shadow'
       }`}
+      {...(isEditing ? {} : listeners)}
+      {...(isEditing ? {} : attributes)}
     >
       <div className="flex items-start gap-1.5 p-3">
         {!isEditing && (
-          <button
-            type="button"
-            aria-label="Drag note to another column"
-            className="mt-0.5 flex size-7 shrink-0 cursor-grab items-center justify-center rounded-md text-teachstone-muted transition hover:bg-gray-100 hover:text-teachstone-navy active:cursor-grabbing focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-teachstone-teal"
-            {...listeners}
-            {...attributes}
+          <span
+            aria-hidden
+            className="mt-0.5 flex size-7 shrink-0 items-center justify-center rounded-md text-teachstone-muted"
           >
             <GripVertical className="size-3.5" />
-          </button>
+          </span>
         )}
 
         {isEditing ? (
@@ -98,6 +100,7 @@ export function KanbanNoteCard({ note, onUpdate, onDelete }: KanbanNoteCardProps
         <button
           type="button"
           onClick={onDelete}
+          onPointerDown={(event) => event.stopPropagation()}
           aria-label="Delete note"
           className="flex size-7 shrink-0 items-center justify-center rounded-md text-red-600 transition hover:bg-red-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-red-600"
         >
