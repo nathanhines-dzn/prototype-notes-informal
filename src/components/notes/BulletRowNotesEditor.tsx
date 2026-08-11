@@ -27,7 +27,7 @@ type BulletRowNotesEditorProps = {
 const DRAFT_KEY = '__draft__'
 
 const TEXTAREA_CLASS =
-  'min-h-7 max-w-full resize-none overflow-hidden bg-transparent py-1 text-base leading-5 text-teachstone-navy outline-none'
+  'min-h-7 max-w-full resize-none overflow-hidden bg-transparent py-1 text-sm leading-5 text-teachstone-navy outline-none'
 
 function splitPasteLines(raw: string): string[] {
   return raw
@@ -428,14 +428,14 @@ export function BulletRowNotesEditor({
         onBlur={handleShellFocusOut}
         className="min-h-[11.25rem] cursor-text rounded-[11px] border border-gray-300 bg-white px-4 py-3 focus-within:ring-1 focus-within:ring-teachstone-teal"
       >
-        <ul className="min-h-[9.75rem] space-y-2.5">
+        <ul className="min-h-[9.75rem] space-y-1">
           {displayNotes.map((note, index) => (
             <li
               key={note.id}
               data-note-row={note.id}
               className="flex items-center gap-2"
             >
-              <span className="shrink-0 text-base leading-5 text-teachstone-navy" aria-hidden>
+              <span className="shrink-0 text-sm leading-5 text-teachstone-navy" aria-hidden>
                 •
               </span>
               <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
@@ -495,7 +495,7 @@ export function BulletRowNotesEditor({
           ))}
 
           <li data-note-row={DRAFT_KEY} className="flex items-center gap-2">
-            <span className="shrink-0 text-base leading-5 text-teachstone-navy" aria-hidden>
+            <span className="shrink-0 text-sm leading-5 text-teachstone-navy" aria-hidden>
               •
             </span>
             <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2 gap-y-1">
