@@ -31,7 +31,7 @@ export function KanbanColumn({
         isOver ? 'border-teachstone-teal bg-teal-50/50' : 'border-gray-200'
       }`}
     >
-      <header className="border-b border-gray-200 px-4 py-3">
+      <header className="rounded-t-xl border-b border-gray-300 bg-[#f4f8fa] px-4 py-3">
         <div className="flex items-baseline justify-between gap-2">
           <h3
             className="min-w-0 flex-1 truncate text-sm font-semibold text-teachstone-navy"

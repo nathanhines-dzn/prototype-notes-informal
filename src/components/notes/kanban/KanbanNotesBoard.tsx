@@ -5,9 +5,11 @@ import {
   useSensors,
   type DragEndEvent,
 } from '@dnd-kit/core'
+import { useRef } from 'react'
 import { useToast } from '../../../context/ToastContext'
 import type { ClassDimension, CycleNote } from '../../../types'
 import { KanbanColumn } from './KanbanColumn'
+import { KanbanFloatingHeaderBar } from './KanbanFloatingHeaderBar'
 import {
   buildKanbanColumns,
   getKanbanColumnIdForNote,
@@ -41,9 +43,14 @@ export function KanbanNotesBoard({
       activationConstraint: { distance: 3 },
     }),
   )
+  const scrollWrapperRef = useRef<HTMLDivElement>(null)
 
   const orderedDimensions = getOrderedDimensions(dimensions)
   const columns = buildKanbanColumns(orderedDimensions)
+  const columnsWithNotes = columns.map((column) => ({
+    ...column,
+    notes: getNotesForKanbanColumn(column.columnId, notes, dimensions),
+  }))
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event
@@ -84,15 +91,15 @@ export function KanbanNotesBoard({
 
   return (
     <div className="border-t border-gray-100 pt-6">
-      <div className="-mx-1 overflow-x-auto px-1 pb-2">
+      <div ref={scrollWrapperRef} className="-mx-1 overflow-x-auto px-1 pb-2">
         <DndContext sensors={sensors} onDragEnd={handleDragEnd}>
           <div className="flex w-max min-w-full gap-4">
-            {columns.map((column) => (
+            {columnsWithNotes.map((column) => (
               <KanbanColumn
                 key={column.columnId}
                 columnId={column.columnId}
                 title={column.title}
-                notes={getNotesForKanbanColumn(column.columnId, notes, dimensions)}
+                notes={column.notes}
                 onUpdateNote={onUpdateNote}
                 onDeleteNote={onDeleteNote}
                 onCompose={() =>
@@ -105,6 +112,15 @@ export function KanbanNotesBoard({
           </div>
         </DndContext>
       </div>
+
+      <KanbanFloatingHeaderBar
+        scrollWrapperRef={scrollWrapperRef}
+        columns={columnsWithNotes.map((column) => ({
+          columnId: column.columnId,
+          title: column.title,
+          noteCount: column.notes.length,
+        }))}
+      />
     </div>
   )
 }
